@@ -25,6 +25,10 @@ import walkingkooka.collect.map.Maps;
 import walkingkooka.collect.set.Sets;
 import walkingkooka.reflect.ClassTesting;
 import walkingkooka.reflect.JavaVisibility;
+import walkingkooka.tree.json.JsonNode;
+import walkingkooka.tree.json.JsonPropertyName;
+import walkingkooka.tree.json.marshall.JsonNodeMarshallingTesting;
+import walkingkooka.tree.json.marshall.JsonNodeUnmarshallContext;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,7 +44,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public final class PropertiesTest implements ClassTesting<Properties>,
         HashCodeEqualsDefinedTesting2<Properties>,
         ToStringTesting<Properties>,
-        CanBeEmptyTesting<Properties> {
+        CanBeEmptyTesting<Properties>,
+        JsonNodeMarshallingTesting<Properties> {
 
     // get..............................................................................................................
 
@@ -747,6 +752,46 @@ public final class PropertiesTest implements ClassTesting<Properties>,
                         map
                 ),
                 map.toString()
+        );
+    }
+
+    // JSON.............................................................................................................
+
+    @Test
+    public void testMarshall() {
+        this.marshallAndCheck(
+                Properties.EMPTY.set(
+                        PropertiesPath.parse("key.111"),
+                        "value111"
+                ).set(
+                        PropertiesPath.parse("key.222"),
+                        "value222"
+                ),
+                JsonNode.object()
+                        .set(
+                                JsonPropertyName.with("key.111"),
+                                JsonNode.string("value111")
+                        ).set(
+                                JsonPropertyName.with("key.222"),
+                                JsonNode.string("value222")
+                        )
+        );
+    }
+
+    @Override
+    public Properties unmarshall(final JsonNode json,
+                                 final JsonNodeUnmarshallContext context) {
+        return Properties.unmarshall(
+                json,
+                context
+        );
+    }
+
+    @Override
+    public Properties createJsonNodeMarshallingValue() {
+        return Properties.EMPTY.set(
+                PropertiesPath.parse("key.111"),
+                "value111"
         );
     }
 
