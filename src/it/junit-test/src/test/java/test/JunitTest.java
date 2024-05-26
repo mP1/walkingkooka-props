@@ -20,6 +20,8 @@ import com.google.j2cl.junit.apt.J2clTestInput;
 import org.junit.Assert;
 import org.junit.Test;
 
+import walkingkooka.props.Properties;
+
 @J2clTestInput(JunitTest.class)
 public class JunitTest {
 
@@ -29,6 +31,15 @@ public class JunitTest {
                 1,
                 1,
                 "true"
+        );
+    }
+
+    @Test
+    public void testProperties() {
+        checkEquals(
+                Properties.EMPTY.isEmpty(),
+                true,
+                "Empty should be empty"
         );
     }
 

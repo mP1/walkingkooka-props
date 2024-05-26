@@ -2,6 +2,8 @@ package test;
 
 import com.google.gwt.junit.client.GWTTestCase;
 
+import walkingkooka.props.Properties;
+
 public class TestGwtTest extends GWTTestCase {
 
     @Override
@@ -13,6 +15,13 @@ public class TestGwtTest extends GWTTestCase {
         assertEquals(
                 1,
                 1
+        );
+    }
+
+    public void testProperties() {
+        assertEquals(
+                Properties.EMPTY.isEmpty(),
+                true
         );
     }
 }
