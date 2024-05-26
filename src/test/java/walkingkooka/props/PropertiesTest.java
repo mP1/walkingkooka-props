@@ -25,6 +25,7 @@ import walkingkooka.collect.map.Maps;
 import walkingkooka.collect.set.Sets;
 import walkingkooka.reflect.ClassTesting;
 import walkingkooka.reflect.JavaVisibility;
+import walkingkooka.text.printer.TreePrintableTesting;
 import walkingkooka.tree.json.JsonNode;
 import walkingkooka.tree.json.JsonPropertyName;
 import walkingkooka.tree.json.marshall.JsonNodeMarshallingTesting;
@@ -45,7 +46,8 @@ public final class PropertiesTest implements ClassTesting<Properties>,
         HashCodeEqualsDefinedTesting2<Properties>,
         ToStringTesting<Properties>,
         CanBeEmptyTesting<Properties>,
-        JsonNodeMarshallingTesting<Properties> {
+        JsonNodeMarshallingTesting<Properties>,
+        TreePrintableTesting {
 
     // get..............................................................................................................
 
@@ -711,6 +713,32 @@ public final class PropertiesTest implements ClassTesting<Properties>,
                 expected,
                 properties.size(),
                 () -> properties.toString()
+        );
+    }
+
+    // TreePrintable....................................................................................................
+
+    @Test
+    public void testPrintTreeWhenEmpty() {
+        this.treePrintAndCheck(
+                Properties.EMPTY,
+                ""
+        );
+    }
+
+    @Test
+    public void testPrintTreeWhenNotEmpty() {
+        this.treePrintAndCheck(
+                Properties.EMPTY
+                        .set(
+                                PropertiesPath.parse("key.111"),
+                                "*value*111"
+                        ).set(
+                                PropertiesPath.parse("key.222"),
+                                "*value*222"
+                        ),
+                "key.111=*value*111\n" +
+                        "key.222=*value*222\n"
         );
     }
 

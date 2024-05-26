@@ -20,6 +20,10 @@ package walkingkooka.props;
 import walkingkooka.CanBeEmpty;
 import walkingkooka.collect.map.Maps;
 import walkingkooka.collect.set.Sets;
+import walkingkooka.text.CharSequences;
+import walkingkooka.text.CharacterConstant;
+import walkingkooka.text.printer.IndentingPrinter;
+import walkingkooka.text.printer.TreePrintable;
 import walkingkooka.tree.json.JsonNode;
 import walkingkooka.tree.json.JsonPropertyName;
 import walkingkooka.tree.json.marshall.JsonNodeContext;
@@ -38,7 +42,8 @@ import java.util.stream.Collectors;
 /**
  * An immutable key/value store of {@link String values}.
  */
-public final class Properties implements CanBeEmpty {
+public final class Properties implements CanBeEmpty,
+        TreePrintable {
 
     /**
      * An empty {@link Properties}.
@@ -165,6 +170,34 @@ public final class Properties implements CanBeEmpty {
 
     // @VisibleForTesting
     final Map<PropertiesPath, String> pathToValue;
+
+
+    // TreePrintable....................................................................................................
+
+    private final static CharacterConstant SEPARATOR = CharacterConstant.with('=');
+
+    @Override
+    public void printTree(final IndentingPrinter printer) {
+        Objects.requireNonNull(printer, "printer");
+
+        for(final Entry<PropertiesPath, String> entries : this.entries()) {
+            printer.lineStart();
+
+            printer.print(
+                    entries.getKey()
+                            .value()
+            );
+
+            printer.print(SEPARATOR);
+            printer.println(
+                    CharSequences.escape(
+                        entries.getValue()
+                    )
+            );
+        }
+
+        printer.lineStart();
+    }
 
     // Object...........................................................................................................
 
