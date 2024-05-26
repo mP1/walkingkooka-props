@@ -18,6 +18,7 @@
 package walkingkooka.props;
 
 import walkingkooka.CanBeEmpty;
+import walkingkooka.InvalidCharacterException;
 import walkingkooka.collect.map.Maps;
 import walkingkooka.collect.set.Sets;
 import walkingkooka.text.CharSequences;
@@ -30,6 +31,7 @@ import walkingkooka.tree.json.marshall.JsonNodeContext;
 import walkingkooka.tree.json.marshall.JsonNodeMarshallContext;
 import walkingkooka.tree.json.marshall.JsonNodeUnmarshallContext;
 
+import java.io.Reader;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -171,6 +173,349 @@ public final class Properties implements CanBeEmpty,
     // @VisibleForTesting
     final Map<PropertiesPath, String> pathToValue;
 
+    // parse............................................................................................................
+
+    /**
+     * Parses the text assumed to be a multi line text file containing a *.properties following similar rules of
+     * {@link java.util.Properties#load(Reader)}.
+     * <br>
+     * Note the major difference between the two is what is considered to be a valid key, {@see ProperiesPath}.
+     * The rules about line continuation and escape characters should be identical.
+     */
+    public static Properties parse(final String text) {
+        Objects.requireNonNull(text, "text");
+
+        final int length = text.length();
+
+        final int MODE_CHAR = 1;
+        final int MODE_CHAR_BACKSPACE_ESCAPING = 2;
+        final int MODE_CHAR_BACKSPACE_ESCAPING_CR = 3;
+        final int MODE_CHAR_BACKSPACE_ESCAPING_NL = 4;
+        final int MODE_CHAR_UNICODE_0 = 5;
+        final int MODE_CHAR_UNICODE_1 = 6;
+        final int MODE_CHAR_UNICODE_2 = 7;
+        final int MODE_CHAR_UNICODE_3 = 8;
+
+        int unicodeChar = 0;
+        int charMode = MODE_CHAR;
+
+        Properties properties = EMPTY;
+
+        PropertiesPath key = null;
+        String value = null;
+
+        StringBuilder token = null;
+
+        final int MODE_TOKEN = 1;
+        final int MODE_TOKEN_COMMENT = 2;
+        final int MODE_TOKEN_KEY = 3;
+        final int MODE_TOKEN_VALUE = 4;
+
+        int tokenMode = MODE_TOKEN;
+
+        for (int i = 0; i < length; i++) {
+            char nextChar = 0;
+
+            {
+                final char c = text.charAt(i);
+
+                switch (charMode) {
+                    case MODE_CHAR:
+                        switch (c) {
+                            case '\n':
+                            case '\r':
+                                // not in escape mode must be end of key/value
+                                if (null != key) {
+                                    if (null == value) {
+                                        throw new InvalidCharacterException(
+                                                text,
+                                                i
+                                        );
+                                    }
+                                    properties = properties.set(
+                                            key,
+                                            value + token.toString()
+                                                    .trim()
+                                    );
+
+                                    key = null;
+                                    value = null;
+                                    tokenMode = MODE_TOKEN;
+                                }
+                                nextChar = c;
+                                break;
+                            case '\\':
+                                charMode = MODE_CHAR_BACKSPACE_ESCAPING;
+                                break;
+                            default:
+                                nextChar = c;
+                                break;
+                        }
+                        break;
+                    case MODE_CHAR_BACKSPACE_ESCAPING:
+                        switch (c) {
+                            case 'b':
+                                nextChar = '\b';
+                                charMode = MODE_CHAR;
+                                break;
+                            case 'f':
+                                nextChar = '\f';
+                                charMode = MODE_CHAR;
+                                break;
+                            case 'n':
+                                nextChar = '\n';
+                                charMode = MODE_CHAR;
+                                break;
+                            case 'r':
+                                nextChar = '\r';
+                                charMode = MODE_CHAR;
+                                break;
+                            case 't':
+                                nextChar = '\t';
+                                charMode = MODE_CHAR;
+                                break;
+                            case 'u':
+                                charMode = MODE_CHAR_UNICODE_0;
+                                break;
+                            case '\\':
+                                charMode = MODE_CHAR;
+                                break;
+                            case '\r':
+                                value = value + token.toString()
+                                        .trim();
+                                token = new StringBuilder();
+                                charMode = MODE_CHAR_BACKSPACE_ESCAPING_CR;
+                                break;
+                            case '\n':
+                                value = value + token.toString()
+                                        .trim();
+                                token = new StringBuilder();
+                                charMode = MODE_CHAR_BACKSPACE_ESCAPING_NL;
+                                break;
+                            default:
+                                nextChar = c;
+                                charMode = MODE_CHAR;
+                                break;
+                        }
+                        break;
+                    case MODE_CHAR_BACKSPACE_ESCAPING_CR:
+                        switch (c) {
+                            case '\n': // BACKSLASH CR NL
+                                charMode = MODE_CHAR;
+                                break;
+                            default:
+                                nextChar = c;
+                                charMode = MODE_CHAR;
+                                break;
+                        }
+                        break;
+                    case MODE_CHAR_BACKSPACE_ESCAPING_NL:
+                        switch (c) {
+                            case '\r': // BACKSLASH CR NL
+                                nextChar = '\r';
+                                charMode = MODE_CHAR;
+                                break;
+                            default:
+                                nextChar = c;
+                                charMode = MODE_CHAR;
+                                break;
+                        }
+                        break;
+                    case MODE_CHAR_UNICODE_0:
+                        unicodeChar = nextUnicodeDigit(
+                                nextChar,
+                                i,
+                                text,
+                                unicodeChar
+                        );
+                        charMode = MODE_CHAR_UNICODE_1;
+                        break;
+                    case MODE_CHAR_UNICODE_1:
+                        unicodeChar = nextUnicodeDigit(
+                                nextChar,
+                                i,
+                                text,
+                                unicodeChar
+                        );
+                        charMode = MODE_CHAR_UNICODE_1;
+                        break;
+                    case MODE_CHAR_UNICODE_2:
+                        unicodeChar = nextUnicodeDigit(
+                                nextChar,
+                                i,
+                                text,
+                                unicodeChar
+                        );
+                        charMode = MODE_CHAR_UNICODE_2;
+                        break;
+                    case MODE_CHAR_UNICODE_3:
+                        nextChar = (char) nextUnicodeDigit(
+                                nextChar,
+                                i,
+                                text,
+                                unicodeChar
+                        );
+                        charMode = MODE_CHAR;
+                        unicodeChar = 0;
+                        break;
+                    default:
+                        throw new IllegalStateException("Invalid char mode " + charMode);
+                }
+            }
+
+            switch (charMode) {
+                case MODE_CHAR:
+                    switch (tokenMode) {
+                        case MODE_TOKEN:
+                            if (isWhitespace(nextChar)) {
+                                break;
+                            }
+                            if (isComment(nextChar)) {
+                                tokenMode = MODE_TOKEN_COMMENT;
+                                break;
+                            }
+                            // starting key!
+                            token = new StringBuilder()
+                                    .append(nextChar);
+                            tokenMode = MODE_TOKEN_KEY;
+                            break;
+                        case MODE_TOKEN_COMMENT:
+                            switch (nextChar) {
+                                case '\n':
+                                case '\r':
+                                    tokenMode = MODE_TOKEN;
+                                    break;
+                                default:
+                                    // ignore other comment chars
+                                    break;
+                            }
+                            break;
+                        case MODE_TOKEN_KEY:
+                            switch (nextChar) {
+                                case '=':
+                                case ':':
+                                    key = key(token.toString().trim());
+                                    token = new StringBuilder();
+                                    value = "";
+                                    tokenMode = MODE_TOKEN_VALUE;
+                                    break;
+                                case '\n':
+                                case '\r':
+                                    // missing assignment and value
+                                    throw new InvalidCharacterException(
+                                            text,
+                                            i
+                                    );
+                                default:
+                                    token.append(nextChar);
+                                    break;
+                            }
+                            break;
+                        case MODE_TOKEN_VALUE:
+                            switch (nextChar) {
+                                case '\n':
+                                case '\r':
+                                    value = value + token.toString()
+                                            .trim();
+                                    token = new StringBuilder();
+                                default:
+                                    token.append(nextChar);
+                                    break;
+                            }
+                            break;
+                        default:
+                            throw new IllegalStateException("Invalid token mode " + tokenMode);
+                    }
+                    break;
+                default:
+                    // other char modes character is incomplete continue reading chars.
+            }
+        }
+
+        switch (tokenMode) {
+            case MODE_TOKEN:
+            case MODE_TOKEN_COMMENT:
+                break;
+            case MODE_TOKEN_KEY:
+                throw new IllegalArgumentException("Missing assignment following key");
+            case MODE_TOKEN_VALUE:
+                properties = properties.set(
+                        key,
+                        value + token.toString()
+                                .trim()
+                );
+                break;
+            default:
+                throw new IllegalStateException("Invalid tokenMode " + tokenMode);
+        }
+
+        return properties;
+    }
+
+    private static int nextUnicodeDigit(final char c,
+                                        final int pos,
+                                        final String text,
+                                        final int unicode) {
+        return unicode * 16 + digit(
+                c,
+                pos,
+                text
+        );
+    }
+
+    private static int digit(final char c,
+                             final int pos,
+                             final String text) {
+        switch (c) {
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                return c - '0';
+            default:
+                throw new InvalidCharacterException(
+                        text,
+                        pos
+                );
+        }
+    }
+
+    /**
+     * Helper used to define what is considered whitespace within a properties text file.
+     */
+    private static boolean isWhitespace(final char c) {
+        final boolean whitespace;
+
+        switch (c) {
+            case '\b':
+            case '\f':
+            case '\n':
+            case '\r':
+            case '\t':
+            case ' ':
+                whitespace = true;
+                break;
+            default:
+                whitespace = false;
+                break;
+        }
+
+        return whitespace;
+    }
+
+    private static boolean isComment(final char c) {
+        return '!' == c || '#' == c;
+    }
+
+    private static PropertiesPath key(final String text) {
+        return PropertiesPath.parse(text);
+    }
 
     // TreePrintable....................................................................................................
 
