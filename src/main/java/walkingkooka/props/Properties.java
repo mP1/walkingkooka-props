@@ -237,8 +237,10 @@ public final class Properties implements CanBeEmpty,
                                     }
                                     properties = properties.set(
                                             key,
-                                            value + token.toString()
-                                                    .trim()
+                                            concat(
+                                                    value,
+                                                    token
+                                            )
                                     );
 
                                     key = null;
@@ -284,14 +286,18 @@ public final class Properties implements CanBeEmpty,
                                 charMode = MODE_CHAR;
                                 break;
                             case '\r':
-                                value = value + token.toString()
-                                        .trim();
+                                value = concat(
+                                        value,
+                                        token
+                                );
                                 token = new StringBuilder();
                                 charMode = MODE_CHAR_BACKSPACE_ESCAPING_CR;
                                 break;
                             case '\n':
-                                value = value + token.toString()
-                                        .trim();
+                                value = concat(
+                                        value,
+                                        token
+                                );
                                 token = new StringBuilder();
                                 charMode = MODE_CHAR_BACKSPACE_ESCAPING_NL;
                                 break;
@@ -419,8 +425,10 @@ public final class Properties implements CanBeEmpty,
                             switch (nextChar) {
                                 case '\n':
                                 case '\r':
-                                    value = value +
-                                            CharSequences.trimLeft(token);
+                                    value = concat(
+                                            value,
+                                            token
+                                    );
                                     token = new StringBuilder();
                                 default:
                                     token.append(nextChar);
@@ -445,8 +453,10 @@ public final class Properties implements CanBeEmpty,
             case MODE_TOKEN_VALUE:
                 properties = properties.set(
                         key,
-                        value +
-                                CharSequences.trimLeft(token)
+                        concat(
+                                value,
+                                token
+                        )
                 );
                 break;
             default:
@@ -488,6 +498,11 @@ public final class Properties implements CanBeEmpty,
                         pos
                 );
         }
+    }
+
+    private static String concat(final String value,
+                                 final StringBuilder b) {
+        return value + CharSequences.trimLeft(b);
     }
 
     /**
