@@ -820,6 +820,17 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     }
 
     @Test
+    public void testParseKeyNonEmptyValueIncludesUnicode() {
+        this.parseStringAndCheck(
+                "key1=123\\u0041\\u0042",
+                Properties.EMPTY.set(
+                        PropertiesPath.parse("key1"),
+                        "123AB"
+                )
+        );
+    }
+
+    @Test
     public void testParseWhitespaceKeyWhitespaceAssignmentWhitespaceValueWhitespace() {
         this.parseStringAndCheck(
                 " key1 = 123 ",
