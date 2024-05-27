@@ -855,10 +855,10 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     @Test
     public void testParseWhitespaceKeyWhitespaceAssignmentWhitespaceValueWhitespace() {
         this.parseStringAndCheck(
-                " key1 = 123 ",
+                " key1 = 123   ",
                 Properties.EMPTY.set(
                         PropertiesPath.parse("key1"),
-                        "123"
+                        "123   "
                 )
         );
     }
@@ -866,10 +866,10 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     @Test
     public void testParseWhitespaceKeyWhitespaceAssignmentWhitespaceValueWhitespace2() {
         this.parseStringAndCheck(
-                "\b\f\tkey1\b\f\t=\b\f\t123\b\f\t",
+                "\f\tkey1\f\t=\f\t123\f\t",
                 Properties.EMPTY.set(
                         PropertiesPath.parse("key1"),
-                        "123"
+                        "123\f\t"
                 )
         );
     }

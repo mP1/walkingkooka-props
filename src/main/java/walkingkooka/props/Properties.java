@@ -181,6 +181,9 @@ public final class Properties implements CanBeEmpty,
      * <br>
      * Note the major difference between the two is what is considered to be a valid key, {@see ProperiesPath}.
      * The rules about line continuation and escape characters should be identical.
+     * <br>
+     * Note that when parsing values, whitespace is left trimmed and never right trimmed. This means to keep leading
+     * spaces in a value the first for the line must be escaped.
      */
     public static Properties parse(final String text) {
         Objects.requireNonNull(text, "text");
@@ -301,6 +304,7 @@ public final class Properties implements CanBeEmpty,
                     case MODE_CHAR_BACKSPACE_ESCAPING_CR:
                         switch (c) {
                             case '\n': // BACKSLASH CR NL
+                                nextChar = c;
                                 charMode = MODE_CHAR;
                                 break;
                             default:
@@ -415,8 +419,8 @@ public final class Properties implements CanBeEmpty,
                             switch (nextChar) {
                                 case '\n':
                                 case '\r':
-                                    value = value + token.toString()
-                                            .trim();
+                                    value = value +
+                                            CharSequences.trimLeft(token);
                                     token = new StringBuilder();
                                 default:
                                     token.append(nextChar);
@@ -441,8 +445,8 @@ public final class Properties implements CanBeEmpty,
             case MODE_TOKEN_VALUE:
                 properties = properties.set(
                         key,
-                        value + token.toString()
-                                .trim()
+                        value +
+                                CharSequences.trimLeft(token)
                 );
                 break;
             default:
