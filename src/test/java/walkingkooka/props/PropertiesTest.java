@@ -26,12 +26,16 @@ import walkingkooka.collect.set.Sets;
 import walkingkooka.reflect.ClassTesting;
 import walkingkooka.reflect.JavaVisibility;
 import walkingkooka.test.ParseStringTesting;
+import walkingkooka.text.CharSequences;
+import walkingkooka.text.Indentation;
+import walkingkooka.text.LineEnding;
 import walkingkooka.text.printer.TreePrintableTesting;
 import walkingkooka.tree.json.JsonNode;
 import walkingkooka.tree.json.JsonPropertyName;
 import walkingkooka.tree.json.marshall.JsonNodeMarshallingTesting;
 import walkingkooka.tree.json.marshall.JsonNodeUnmarshallContext;
 
+import java.io.BufferedReader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -853,6 +857,28 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     }
 
     @Test
+    public void testParseKeyValueNulChar() {
+        this.parseStringAndCheck(
+                "key1=\\u0000",
+                Properties.EMPTY.set(
+                        PropertiesPath.parse("key1"),
+                        "\u0000"
+                )
+        );
+    }
+
+    @Test
+    public void testParseKeyNonEmptyValueIncludesUnicode() {
+        this.parseStringAndCheck(
+                "key1=123\\u0041\\u0042",
+                Properties.EMPTY.set(
+                        PropertiesPath.parse("key1"),
+                        "123AB"
+                )
+        );
+    }
+
+    @Test
     public void testParseWhitespaceKeyWhitespaceAssignmentWhitespaceValueWhitespace() {
         this.parseStringAndCheck(
                 " key1 = 123   ",
@@ -1040,6 +1066,165 @@ public final class PropertiesTest implements ClassTesting<Properties>,
                         ),
                 "key.111=*value*111\n" +
                         "key.222=*value*222\n"
+        );
+    }
+
+    @Test
+    public void testPrintTreeWhenNotEmptyButEmptyValues() {
+        this.treePrintAndCheck(
+                Properties.EMPTY
+                        .set(
+                                PropertiesPath.parse("key.111"),
+                                ""
+                        ).set(
+                                PropertiesPath.parse("key.222"),
+                                "*value*222"
+                        ),
+                "key.111=\n" +
+                        "key.222=*value*222\n"
+        );
+    }
+
+    @Test
+    public void testPrintTreeValuesNeedEscaping() {
+        this.treePrintAndCheck(
+                Properties.EMPTY
+                        .set(
+                                PropertiesPath.parse("key.111"),
+                                "*value*111"
+                        ).set(
+                                PropertiesPath.parse("key.222"),
+                                "\b\f\t\r\n*value*222\b\f\t\r\n"
+                        ),
+                "key.111=*value*111\n" +
+                        "key.222=\\b\\f\\t\\r\\n*value*222\\b\\f\\t\\r\\n\n"
+        );
+    }
+
+    @Test
+    public void testPrintTreeMultiLineValues() {
+        this.treePrintAndCheck(
+                Properties.EMPTY
+                        .set(
+                                PropertiesPath.parse("key.111"),
+                                "*value*111"
+                        ).set(
+                                PropertiesPath.parse("key.222"),
+                                "222\rBBB\n222\r\nBBB"
+                        ).set(
+                                PropertiesPath.parse("key.333"),
+                                "333"
+                        ),
+                "key.111=*value*111\n" +
+                        "key.222=222\\rBBB\\n222\\r\\nBBB\n" +
+                        "key.333=333\n"
+        );
+    }
+
+    @Test
+    public void testPrintTreeNulChar() throws Exception {
+
+        final java.util.Properties p = new java.util.Properties();
+        p.setProperty("key.111", "\u0000");
+
+        final StringWriter stringWriter = new StringWriter();
+        p.store(
+                stringWriter,
+                null
+        );
+
+        final StringBuilder text = new StringBuilder();
+        try(final BufferedReader bufferedReader = new BufferedReader(new StringReader(stringWriter.toString()))) {
+            for(;;) {
+                final String line = bufferedReader.readLine();
+                if (null == line) {
+                    break;
+                }
+                if(line.startsWith("!") | line.startsWith("#")) {
+                    continue;
+                }
+                text.append(line)
+                        .append('\n');
+            }
+        }
+
+
+        this.checkEquals(
+                "key.111=\u0000\n",
+                text.toString()
+        );
+
+        this.treePrintAndCheck(
+                Properties.EMPTY
+                        .set(
+                                PropertiesPath.parse("key.111"),
+                                "\u0000"
+                        ).set(
+                                PropertiesPath.parse("key.222"),
+                                "222"
+                        ),
+                "key.111=\\u0000\n" +
+                        "key.222=222\n"
+        );
+    }
+
+    @Test
+    public void testPrintTreeAndParse15() {
+        final StringBuilder b = new StringBuilder();
+        for(int i = 0; i < 15; i++) {
+            b.append(
+                    CharSequences.escape(
+                            String.valueOf((char)i)
+                    )
+            );
+        }
+        final String value = b.toString();
+
+        final Properties properties = Properties.EMPTY
+                .set(
+                        PropertiesPath.parse("key.111"),
+                        value
+                );
+
+        final String text = properties.treeToString(
+                Indentation.SPACES2,
+                LineEnding.NL
+        );
+
+        this.checkEquals(
+                properties,
+                Properties.parse(text),
+                () -> "round tripping\n" + text
+        );
+    }
+
+    @Test
+    public void testPrintTreeAndParse255() {
+        final StringBuilder b = new StringBuilder();
+        for(int i = 0; i < 255; i++) {
+            b.append(
+                    CharSequences.escape(
+                            String.valueOf((char)i)
+                    )
+            );
+        }
+        final String value = b.toString();
+
+        final Properties properties = Properties.EMPTY
+                .set(
+                        PropertiesPath.parse("key.111"),
+                        value
+                );
+
+        final String text = properties.treeToString(
+                Indentation.SPACES2,
+                LineEnding.NL
+        );
+
+        this.checkEquals(
+                properties,
+                Properties.parse(text),
+                () -> "round tripping\n" + text
         );
     }
 
