@@ -323,7 +323,7 @@ public final class Properties implements CanBeEmpty,
                         break;
                     case MODE_CHAR_UNICODE_0:
                         unicodeChar = nextUnicodeDigit(
-                                nextChar,
+                                c,
                                 i,
                                 text,
                                 unicodeChar
@@ -332,25 +332,25 @@ public final class Properties implements CanBeEmpty,
                         break;
                     case MODE_CHAR_UNICODE_1:
                         unicodeChar = nextUnicodeDigit(
-                                nextChar,
-                                i,
-                                text,
-                                unicodeChar
-                        );
-                        charMode = MODE_CHAR_UNICODE_1;
-                        break;
-                    case MODE_CHAR_UNICODE_2:
-                        unicodeChar = nextUnicodeDigit(
-                                nextChar,
+                                c,
                                 i,
                                 text,
                                 unicodeChar
                         );
                         charMode = MODE_CHAR_UNICODE_2;
                         break;
+                    case MODE_CHAR_UNICODE_2:
+                        unicodeChar = nextUnicodeDigit(
+                                c,
+                                i,
+                                text,
+                                unicodeChar
+                        );
+                        charMode = MODE_CHAR_UNICODE_3;
+                        break;
                     case MODE_CHAR_UNICODE_3:
                         nextChar = (char) nextUnicodeDigit(
-                                nextChar,
+                                c,
                                 i,
                                 text,
                                 unicodeChar
@@ -466,6 +466,8 @@ public final class Properties implements CanBeEmpty,
     private static int digit(final char c,
                              final int pos,
                              final String text) {
+        final int value;
+
         switch (c) {
             case '0':
             case '1':
@@ -477,13 +479,32 @@ public final class Properties implements CanBeEmpty,
             case '7':
             case '8':
             case '9':
-                return c - '0';
+                value = c - '0';
+                break;
+            case 'A':
+            case 'B':
+            case 'C':
+            case 'D':
+            case 'E':
+            case 'F':
+                value = 10 + c - 'A';
+                break;
+            case 'a':
+            case 'b':
+            case 'c':
+            case 'd':
+            case 'e':
+            case 'f':
+                value = 10 + c - 'a';
+                break;
             default:
                 throw new InvalidCharacterException(
                         text,
                         pos
                 );
         }
+
+        return value;
     }
 
     /**
@@ -493,6 +514,7 @@ public final class Properties implements CanBeEmpty,
         final boolean whitespace;
 
         switch (c) {
+            case '\0':
             case '\b':
             case '\f':
             case '\n':
