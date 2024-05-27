@@ -25,6 +25,7 @@ import walkingkooka.collect.map.Maps;
 import walkingkooka.collect.set.Sets;
 import walkingkooka.reflect.ClassTesting;
 import walkingkooka.reflect.JavaVisibility;
+import walkingkooka.test.ParseStringTesting;
 import walkingkooka.text.printer.TreePrintableTesting;
 import walkingkooka.tree.json.JsonNode;
 import walkingkooka.tree.json.JsonPropertyName;
@@ -47,7 +48,8 @@ public final class PropertiesTest implements ClassTesting<Properties>,
         ToStringTesting<Properties>,
         CanBeEmptyTesting<Properties>,
         JsonNodeMarshallingTesting<Properties>,
-        TreePrintableTesting {
+        TreePrintableTesting,
+        ParseStringTesting<Properties> {
 
     // get..............................................................................................................
 
@@ -484,7 +486,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     private void entriesAndCheck(final Properties properties,
                                  final Set<Entry<PropertiesPath, String>> expected) {
         final Map<PropertiesPath, String> expectedMap = Maps.sorted();
-        for(final Entry<PropertiesPath, String> entry : expected) {
+        for (final Entry<PropertiesPath, String> entry : expected) {
             expectedMap.put(
                     entry.getKey(),
                     entry.getValue()
@@ -492,7 +494,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
         }
 
         final Map<PropertiesPath, String> actualMap = Maps.sorted();
-        for(final Entry<PropertiesPath, String> entry : properties.entries()) {
+        for (final Entry<PropertiesPath, String> entry : properties.entries()) {
             actualMap.put(
                     entry.getKey(),
                     entry.getValue()
@@ -519,7 +521,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
                         .clear()
         );
     }
-    
+
     // keys.............................................................................................................
 
     @Test
@@ -653,9 +655,9 @@ public final class PropertiesTest implements ClassTesting<Properties>,
         assertThrows(
                 UnsupportedOperationException.class,
                 () -> Properties.EMPTY.set(
-                        PropertiesPath.parse("key.111"),
-                        "value111"
-                ).values()
+                                PropertiesPath.parse("key.111"),
+                                "value111"
+                        ).values()
                         .clear()
         );
     }
@@ -714,6 +716,261 @@ public final class PropertiesTest implements ClassTesting<Properties>,
                 properties.size(),
                 () -> properties.toString()
         );
+    }
+
+    // parse............................................................................................................
+
+    @Override
+    public void testParseStringEmptyFails() {
+        throw new UnsupportedOperationException(); // empty is ok
+    }
+
+    @Test
+    public void testParseEmpty() {
+        this.parseStringAndCheck(
+                "",
+                Properties.EMPTY
+        );
+    }
+
+    @Test
+    public void testParseEmptyLineCr() {
+        this.parseStringAndCheck(
+                " \r",
+                Properties.EMPTY
+        );
+    }
+
+    @Test
+    public void testParseEmptyLineNl() {
+        this.parseStringAndCheck(
+                " \n",
+                Properties.EMPTY
+        );
+    }
+
+    @Test
+    public void testParseEmptyLineCrNl() {
+        this.parseStringAndCheck(
+                " \r\n",
+                Properties.EMPTY
+        );
+    }
+
+    @Test
+    public void testParseEmptyLineWhitespace() {
+        this.parseStringAndCheck(
+                "\b\f\t\r\n",
+                Properties.EMPTY
+        );
+    }
+
+    @Test
+    public void testParseEsclComments() {
+        this.parseStringAndCheck(
+                "! 123",
+                Properties.EMPTY
+        );
+    }
+
+    @Test
+    public void testParseHashComments() {
+        this.parseStringAndCheck(
+                "# 123",
+                Properties.EMPTY
+        );
+    }
+
+    @Test
+    public void testParseHashCommentsEmptyLine() {
+        this.parseStringAndCheck(
+                "# 123\n\r\n",
+                Properties.EMPTY
+        );
+    }
+
+    @Test
+    public void testParseKeyMissingAssignmentFails() {
+        this.parseStringFails(
+                "key1",
+                new IllegalArgumentException("Missing assignment following key")
+        );
+    }
+
+    @Test
+    public void testParseKeyEmptyValue() {
+        this.parseStringAndCheck(
+                "key1=",
+                Properties.EMPTY.set(
+                        PropertiesPath.parse("key1"),
+                        ""
+                )
+        );
+    }
+
+    @Test
+    public void testParseKeyNonEmptyValue() {
+        this.parseStringAndCheck(
+                "key1=123",
+                Properties.EMPTY.set(
+                        PropertiesPath.parse("key1"),
+                        "123"
+                )
+        );
+    }
+
+    @Test
+    public void testParseWhitespaeKeyWhitespaceAssignmentWhitespaceValueWhitespace() {
+        this.parseStringAndCheck(
+                " key1 = 123 ",
+                Properties.EMPTY.set(
+                        PropertiesPath.parse("key1"),
+                        "123"
+                )
+        );
+    }
+
+    @Test
+    public void testParseKeyMultilineValueCr() {
+        this.parseStringAndCheck(
+                "key1=123\\\r4",
+                Properties.EMPTY.set(
+                        PropertiesPath.parse("key1"),
+                        "1234"
+                )
+        );
+    }
+
+    @Test
+    public void testParseKeyMultilineValueNl() {
+        this.parseStringAndCheck(
+                "key1=123\\\n4",
+                Properties.EMPTY.set(
+                        PropertiesPath.parse("key1"),
+                        "1234"
+                )
+        );
+    }
+
+    @Test
+    public void testParseKeyMultilineValueCrNl() {
+        this.parseStringAndCheck(
+                "key1=123\\\r\n4",
+                Properties.EMPTY.set(
+                        PropertiesPath.parse("key1"),
+                        "1234"
+                )
+        );
+    }
+
+    @Test
+    public void testParseKeyMultilineValueCrNl2() {
+        this.parseStringAndCheck(
+                "key1=123\\\r4\\\n5\\\r\n6",
+                Properties.EMPTY.set(
+                        PropertiesPath.parse("key1"),
+                        "123456"
+                )
+        );
+    }
+
+    @Test
+    public void testParseKeyValueKeyValue() {
+        this.parseStringAndCheck(
+                "key1=111\rkey2=222",
+                Properties.EMPTY.set(
+                        PropertiesPath.parse("key1"),
+                        "111"
+                ).set(
+                        PropertiesPath.parse("key2"),
+                        "222"
+                )
+        );
+    }
+
+    @Test
+    public void testParseKeyMultilineValueCrKeyValue() {
+        this.parseStringAndCheck(
+                "key1=111\\\rAAA\rkey2=222",
+                Properties.EMPTY.set(
+                        PropertiesPath.parse("key1"),
+                        "111AAA"
+                ).set(
+                        PropertiesPath.parse("key2"),
+                        "222"
+                )
+        );
+    }
+
+    @Test
+    public void testParseKeyMultilineValueNlKeyValue() {
+        this.parseStringAndCheck(
+                "key1=111\\\nAAA\rkey2=222",
+                Properties.EMPTY.set(
+                        PropertiesPath.parse("key1"),
+                        "111AAA"
+                ).set(
+                        PropertiesPath.parse("key2"),
+                        "222"
+                )
+        );
+    }
+
+    @Test
+    public void testParseKeyMultilineValueCrNlKeyValue() {
+        this.parseStringAndCheck(
+                "key1=111\\\r\nAAA\rkey2=222",
+                Properties.EMPTY.set(
+                        PropertiesPath.parse("key1"),
+                        "111AAA"
+                ).set(
+                        PropertiesPath.parse("key2"),
+                        "222"
+                )
+        );
+    }
+
+    @Test
+    public void testParseKeyValueCommentKeyValueComment() {
+        this.parseStringAndCheck(
+                "key1=111\n! comment1\nkey2=222\n# comment 2",
+                Properties.EMPTY.set(
+                        PropertiesPath.parse("key1"),
+                        "111"
+                ).set(
+                        PropertiesPath.parse("key2"),
+                        "222"
+                )
+        );
+    }
+
+    @Test
+    public void testParseKeyValueEmptyLineKeyValueComment() {
+        this.parseStringAndCheck(
+                "key1=111\n \t\f\b\nkey2=222\n# comment 2",
+                Properties.EMPTY.set(
+                        PropertiesPath.parse("key1"),
+                        "111"
+                ).set(
+                        PropertiesPath.parse("key2"),
+                        "222"
+                )
+        );
+    }
+
+    @Override
+    public Properties parseString(final String text) {
+        return Properties.parse(text);
+    }
+
+    @Override
+    public Class<? extends RuntimeException> parseStringFailedExpected(final Class<? extends RuntimeException> thrown) {
+        return thrown;
+    }
+
+    @Override
+    public RuntimeException parseStringFailedExpected(final RuntimeException thrown) {
+        return thrown;
     }
 
     // TreePrintable....................................................................................................
