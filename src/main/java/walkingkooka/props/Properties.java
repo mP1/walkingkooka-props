@@ -284,6 +284,7 @@ public final class Properties implements CanBeEmpty,
                                 break;
                             case '\\':
                                 charMode = MODE_CHAR;
+                                nextChar = c;
                                 break;
                             case '\r':
                                 value = concat(
@@ -333,7 +334,7 @@ public final class Properties implements CanBeEmpty,
                         break;
                     case MODE_CHAR_UNICODE_0:
                         unicodeChar = nextUnicodeDigit(
-                                nextChar,
+                                c,
                                 i,
                                 text,
                                 unicodeChar
@@ -342,25 +343,25 @@ public final class Properties implements CanBeEmpty,
                         break;
                     case MODE_CHAR_UNICODE_1:
                         unicodeChar = nextUnicodeDigit(
-                                nextChar,
-                                i,
-                                text,
-                                unicodeChar
-                        );
-                        charMode = MODE_CHAR_UNICODE_1;
-                        break;
-                    case MODE_CHAR_UNICODE_2:
-                        unicodeChar = nextUnicodeDigit(
-                                nextChar,
+                                c,
                                 i,
                                 text,
                                 unicodeChar
                         );
                         charMode = MODE_CHAR_UNICODE_2;
                         break;
+                    case MODE_CHAR_UNICODE_2:
+                        unicodeChar = nextUnicodeDigit(
+                                c,
+                                i,
+                                text,
+                                unicodeChar
+                        );
+                        charMode = MODE_CHAR_UNICODE_3;
+                        break;
                     case MODE_CHAR_UNICODE_3:
                         nextChar = (char) nextUnicodeDigit(
-                                nextChar,
+                                c,
                                 i,
                                 text,
                                 unicodeChar
@@ -480,6 +481,8 @@ public final class Properties implements CanBeEmpty,
     private static int digit(final char c,
                              final int pos,
                              final String text) {
+        final int value;
+
         switch (c) {
             case '0':
             case '1':
@@ -491,13 +494,32 @@ public final class Properties implements CanBeEmpty,
             case '7':
             case '8':
             case '9':
-                return c - '0';
+                value = c - '0';
+                break;
+            case 'A':
+            case 'B':
+            case 'C':
+            case 'D':
+            case 'E':
+            case 'F':
+                value = 10 + c - 'A';
+                break;
+            case 'a':
+            case 'b':
+            case 'c':
+            case 'd':
+            case 'e':
+            case 'f':
+                value = 10 + c - 'a';
+                break;
             default:
                 throw new InvalidCharacterException(
                         text,
                         pos
                 );
         }
+
+        return value;
     }
 
     private static String concat(final String value,
@@ -512,6 +534,7 @@ public final class Properties implements CanBeEmpty,
         final boolean whitespace;
 
         switch (c) {
+            case '\0':
             case '\b':
             case '\f':
             case '\n':
@@ -540,11 +563,15 @@ public final class Properties implements CanBeEmpty,
 
     private final static CharacterConstant SEPARATOR = CharacterConstant.with('=');
 
+    /**
+     * Prints all the entries in this object to produce a <pre>*.properties</pre> file.
+     * Note all the escaping rules honour for values such as escaping and whitespace are honoured.
+     */
     @Override
     public void printTree(final IndentingPrinter printer) {
         Objects.requireNonNull(printer, "printer");
 
-        for(final Entry<PropertiesPath, String> entries : this.entries()) {
+        for (final Entry<PropertiesPath, String> entries : this.entries()) {
             printer.lineStart();
 
             printer.print(
@@ -553,14 +580,57 @@ public final class Properties implements CanBeEmpty,
             );
 
             printer.print(SEPARATOR);
-            printer.println(
-                    CharSequences.escape(
-                        entries.getValue()
-                    )
+            this.printValue(
+                    entries.getValue(),
+                    printer
             );
         }
 
         printer.lineStart();
+    }
+
+    private void printValue(final String value,
+                            final IndentingPrinter printer) {
+        final int length = value.length();
+
+        for (int i = 0; i < length; i++) {
+            final char c = value.charAt(i);
+            switch (c) {
+                case '\b':
+                    printer.print("\\b");
+                    break;
+                case '\f':
+                    printer.print("\\f");
+                    break;
+                case '\t':
+                    printer.print("\\t");
+                    break;
+                case '\n':
+                    printer.print("\\n");
+                    break;
+                case '\r':
+                    printer.print("\\r");
+                    break;
+                case '\\':
+                    printer.print("\\\\");
+                    break;
+                default:
+                    if (c < ' ' || c > 0x80) {
+                        printer.print("\\u");
+                        printer.print(
+                                CharSequences.padLeft(
+                                        Integer.toHexString((c)),
+                                        4,
+                                        '0'
+                                )
+                        );
+                    } else {
+                        printer.print(
+                                String.valueOf(c)
+                        );
+                    }
+            }
+        }
     }
 
     // Object...........................................................................................................
