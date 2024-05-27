@@ -33,6 +33,7 @@ import walkingkooka.tree.json.marshall.JsonNodeMarshallingTesting;
 import walkingkooka.tree.json.marshall.JsonNodeUnmarshallContext;
 
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -1039,6 +1040,59 @@ public final class PropertiesTest implements ClassTesting<Properties>,
                         ),
                 "key.111=*value*111\n" +
                         "key.222=*value*222\n"
+        );
+    }
+
+    // java.util.Properties.............................................................................................
+
+    @Test
+    public void testJavaUtilPropertiesSaveLoadRoundtrip() throws Exception {
+        final java.util.Properties saved = new java.util.Properties();
+
+        final StringBuilder b = new StringBuilder();
+        for(int i = 0; i < 255; i++) {
+            b.append((char)i);
+        }
+        final String value = b.toString();
+
+        saved.setProperty("key123", value);
+
+        final StringWriter stringWriter = new StringWriter();
+        saved.store(stringWriter, null);
+        stringWriter.flush();
+        stringWriter.close();
+
+        final String written = stringWriter.toString();
+
+        final java.util.Properties loaded = new java.util.Properties();
+        loaded.load(new StringReader(written));
+
+        this.checkEquals(
+                saved,
+                loaded
+        );
+    }
+
+    @Test
+    public void testJavaUtilPropertiesSaveLoadRoundtrip2() throws Exception {
+        final java.util.Properties saved = new java.util.Properties();
+        final String value = "   Hello   ";
+        saved.setProperty("key123", value);
+
+        final StringWriter stringWriter = new StringWriter();
+        saved.store(stringWriter, null);
+        stringWriter.flush();
+        stringWriter.close();
+
+        final String written = stringWriter.toString();
+        System.out.println(written);
+
+        final java.util.Properties loaded = new java.util.Properties();
+        loaded.load(new StringReader(written));
+
+        this.checkEquals(
+                saved,
+                loaded
         );
     }
 
