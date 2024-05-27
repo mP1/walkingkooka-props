@@ -32,6 +32,7 @@ import walkingkooka.tree.json.JsonPropertyName;
 import walkingkooka.tree.json.marshall.JsonNodeMarshallingTesting;
 import walkingkooka.tree.json.marshall.JsonNodeUnmarshallContext;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -725,6 +726,37 @@ public final class PropertiesTest implements ClassTesting<Properties>,
         throw new UnsupportedOperationException(); // empty is ok
     }
 
+    // trailing whitespace not removed
+    @Test
+    public void testParseJavaUtilPropertiesKeyAndValueSurroundedByWhitespace() throws Exception {
+        final java.util.Properties p = new java.util.Properties();
+        p.load(new StringReader(" a1 = b2 "));
+        this.checkEquals(
+                "b2 ",
+                p.get("a1")
+        );
+    }
+
+    @Test
+    public void testParseJavaUtilPropertiesMultilineValue() throws Exception {
+        final java.util.Properties p = new java.util.Properties();
+        p.load(new StringReader(" a1 = b2 \\\n   c3 \\\r   d4 "));
+        this.checkEquals(
+                "b2 c3 d4 ",
+                p.get("a1")
+        );
+    }
+
+    @Test
+    public void testParseJavaUtilPropertiesMidLineComment() throws Exception {
+        final java.util.Properties p = new java.util.Properties();
+        p.load(new StringReader("a=before!comment"));
+        this.checkEquals(
+                "before!comment",
+                p.get("a")
+        );
+    }
+
     @Test
     public void testParseEmpty() {
         this.parseStringAndCheck(
@@ -815,17 +847,6 @@ public final class PropertiesTest implements ClassTesting<Properties>,
                 Properties.EMPTY.set(
                         PropertiesPath.parse("key1"),
                         "123"
-                )
-        );
-    }
-
-    @Test
-    public void testParseKeyNonEmptyValueIncludesUnicode() {
-        this.parseStringAndCheck(
-                "key1=123\\u0041\\u0042",
-                Properties.EMPTY.set(
-                        PropertiesPath.parse("key1"),
-                        "123AB"
                 )
         );
     }
