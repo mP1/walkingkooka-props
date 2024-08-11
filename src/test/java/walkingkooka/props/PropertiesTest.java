@@ -52,7 +52,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public final class PropertiesTest implements ClassTesting<Properties>,
         HashCodeEqualsDefinedTesting2<Properties>,
         ToStringTesting<Properties>,
-        CanBeEmptyTesting<Properties>,
+        CanBeEmptyTesting,
         JsonNodeMarshallingTesting<Properties>,
         TreePrintableTesting,
         ParseStringTesting<Properties> {
@@ -687,11 +687,6 @@ public final class PropertiesTest implements ClassTesting<Properties>,
                 ),
                 false
         );
-    }
-
-    @Override
-    public Properties createCanBeEmpty() {
-        return Properties.EMPTY;
     }
 
     // size.............................................................................................................
