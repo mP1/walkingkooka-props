@@ -1,9 +1,9 @@
 package test;
 
 import com.google.gwt.junit.client.GWTTestCase;
-
 import walkingkooka.props.Properties;
 
+@walkingkooka.j2cl.locale.LocaleAware
 public class TestGwtTest extends GWTTestCase {
 
     @Override
