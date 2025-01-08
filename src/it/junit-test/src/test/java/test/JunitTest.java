@@ -28,18 +28,18 @@ public class JunitTest {
     @Test
     public void testAssertEquals() {
         checkEquals(
-                1,
-                1,
-                "true"
+            1,
+            1,
+            "true"
         );
     }
 
     @Test
     public void testProperties() {
         checkEquals(
-                Properties.EMPTY.isEmpty(),
-                true,
-                "Empty should be empty"
+            Properties.EMPTY.isEmpty(),
+            true,
+            "Empty should be empty"
         );
     }
 

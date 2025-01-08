@@ -27,7 +27,7 @@ import walkingkooka.text.CharSequences;
  * A simple {@link Name} that accepts a {@link String} composed of any character.
  */
 final public class PropertiesName implements Name,
-        Comparable<PropertiesName> {
+    Comparable<PropertiesName> {
 
     /**
      * Root singleton
@@ -41,7 +41,7 @@ final public class PropertiesName implements Name,
         CharSequences.failIfNullOrEmpty(name, "name");
         if (-1 != name.indexOf(PropertiesPath.SEPARATOR.character())) {
             throw new IllegalArgumentException("Name " + CharSequences.quote(name) +
-                    " cannot contain " + CharSequences.quoteIfChars(PropertiesPath.SEPARATOR.character()));
+                " cannot contain " + CharSequences.quoteIfChars(PropertiesPath.SEPARATOR.character()));
         }
 
         return new PropertiesName(name);
@@ -67,8 +67,8 @@ final public class PropertiesName implements Name,
     @Override
     public boolean equals(final Object other) {
         return this == other ||
-                other instanceof PropertiesName &&
-                        this.equals0(Cast.to(other));
+            other instanceof PropertiesName &&
+                this.equals0(Cast.to(other));
     }
 
     private boolean equals0(final PropertiesName other) {

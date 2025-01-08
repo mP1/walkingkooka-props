@@ -32,8 +32,8 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 final public class PropertiesPathTest implements PathTesting<PropertiesPath, PropertiesName>,
-        ClassTesting2<PropertiesPath>,
-        ParseStringTesting<PropertiesPath> {
+    ClassTesting2<PropertiesPath>,
+    ParseStringTesting<PropertiesPath> {
 
     @Test
     public void testParseEmptyComponent() {
