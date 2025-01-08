@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
  * An immutable key/value store of {@link String values}.
  */
 public final class Properties implements CanBeEmpty,
-        TreePrintable {
+    TreePrintable {
 
     /**
      * An empty {@link Properties}.
@@ -64,9 +64,9 @@ public final class Properties implements CanBeEmpty,
      */
     public Optional<String> get(final PropertiesPath path) {
         return Optional.ofNullable(
-                this.pathToValue.get(
-                        check(path)
-                )
+            this.pathToValue.get(
+                check(path)
+            )
         );
     }
 
@@ -89,8 +89,8 @@ public final class Properties implements CanBeEmpty,
             final Map<PropertiesPath, String> copy = Maps.ordered();
             copy.putAll(pathToValue);
             copy.put(
-                    path,
-                    value
+                path,
+                value
             );
 
             setOrReplaced = new Properties(copy);
@@ -135,7 +135,7 @@ public final class Properties implements CanBeEmpty,
      */
     public Set<Entry<PropertiesPath, String>> entries() {
         return Sets.readOnly(
-                this.pathToValue.entrySet()
+            this.pathToValue.entrySet()
         );
     }
 
@@ -151,7 +151,7 @@ public final class Properties implements CanBeEmpty,
      */
     public Collection<String> values() {
         return Collections.unmodifiableCollection(
-                this.pathToValue.values()
+            this.pathToValue.values()
         );
     }
 
@@ -231,16 +231,16 @@ public final class Properties implements CanBeEmpty,
                                 if (null != key) {
                                     if (null == value) {
                                         throw new InvalidCharacterException(
-                                                text,
-                                                i
+                                            text,
+                                            i
                                         );
                                     }
                                     properties = properties.set(
-                                            key,
-                                            concat(
-                                                    value,
-                                                    token
-                                            )
+                                        key,
+                                        concat(
+                                            value,
+                                            token
+                                        )
                                     );
 
                                     key = null;
@@ -288,16 +288,16 @@ public final class Properties implements CanBeEmpty,
                                 break;
                             case '\r':
                                 value = concat(
-                                        value,
-                                        token
+                                    value,
+                                    token
                                 );
                                 token = new StringBuilder();
                                 charMode = MODE_CHAR_BACKSPACE_ESCAPING_CR;
                                 break;
                             case '\n':
                                 value = concat(
-                                        value,
-                                        token
+                                    value,
+                                    token
                                 );
                                 token = new StringBuilder();
                                 charMode = MODE_CHAR_BACKSPACE_ESCAPING_NL;
@@ -334,37 +334,37 @@ public final class Properties implements CanBeEmpty,
                         break;
                     case MODE_CHAR_UNICODE_0:
                         unicodeChar = nextUnicodeDigit(
-                                c,
-                                i,
-                                text,
-                                unicodeChar
+                            c,
+                            i,
+                            text,
+                            unicodeChar
                         );
                         charMode = MODE_CHAR_UNICODE_1;
                         break;
                     case MODE_CHAR_UNICODE_1:
                         unicodeChar = nextUnicodeDigit(
-                                c,
-                                i,
-                                text,
-                                unicodeChar
+                            c,
+                            i,
+                            text,
+                            unicodeChar
                         );
                         charMode = MODE_CHAR_UNICODE_2;
                         break;
                     case MODE_CHAR_UNICODE_2:
                         unicodeChar = nextUnicodeDigit(
-                                c,
-                                i,
-                                text,
-                                unicodeChar
+                            c,
+                            i,
+                            text,
+                            unicodeChar
                         );
                         charMode = MODE_CHAR_UNICODE_3;
                         break;
                     case MODE_CHAR_UNICODE_3:
                         nextChar = (char) nextUnicodeDigit(
-                                c,
-                                i,
-                                text,
-                                unicodeChar
+                            c,
+                            i,
+                            text,
+                            unicodeChar
                         );
                         charMode = MODE_CHAR;
                         unicodeChar = 0;
@@ -387,7 +387,7 @@ public final class Properties implements CanBeEmpty,
                             }
                             // starting key!
                             token = new StringBuilder()
-                                    .append(nextChar);
+                                .append(nextChar);
                             tokenMode = MODE_TOKEN_KEY;
                             break;
                         case MODE_TOKEN_COMMENT:
@@ -414,8 +414,8 @@ public final class Properties implements CanBeEmpty,
                                 case '\r':
                                     // missing assignment and value
                                     throw new InvalidCharacterException(
-                                            text,
-                                            i
+                                        text,
+                                        i
                                     );
                                 default:
                                     token.append(nextChar);
@@ -427,8 +427,8 @@ public final class Properties implements CanBeEmpty,
                                 case '\n':
                                 case '\r':
                                     value = concat(
-                                            value,
-                                            token
+                                        value,
+                                        token
                                     );
                                     token = new StringBuilder();
                                 default:
@@ -453,11 +453,11 @@ public final class Properties implements CanBeEmpty,
                 throw new IllegalArgumentException("Missing assignment following key");
             case MODE_TOKEN_VALUE:
                 properties = properties.set(
-                        key,
-                        concat(
-                                value,
-                                token
-                        )
+                    key,
+                    concat(
+                        value,
+                        token
+                    )
                 );
                 break;
             default:
@@ -472,9 +472,9 @@ public final class Properties implements CanBeEmpty,
                                         final String text,
                                         final int unicode) {
         return unicode * 16 + digit(
-                c,
-                pos,
-                text
+            c,
+            pos,
+            text
         );
     }
 
@@ -514,8 +514,8 @@ public final class Properties implements CanBeEmpty,
                 break;
             default:
                 throw new InvalidCharacterException(
-                        text,
-                        pos
+                    text,
+                    pos
                 );
         }
 
@@ -575,14 +575,14 @@ public final class Properties implements CanBeEmpty,
             printer.lineStart();
 
             printer.print(
-                    entries.getKey()
-                            .value()
+                entries.getKey()
+                    .value()
             );
 
             printer.print(SEPARATOR);
             this.printValue(
-                    entries.getValue(),
-                    printer
+                entries.getValue(),
+                printer
             );
         }
 
@@ -618,15 +618,15 @@ public final class Properties implements CanBeEmpty,
                     if (c < ' ' || c > 0x80) {
                         printer.print("\\u");
                         printer.print(
-                                CharSequences.padLeft(
-                                        Integer.toHexString((c)),
-                                        4,
-                                        '0'
-                                )
+                            CharSequences.padLeft(
+                                Integer.toHexString((c)),
+                                4,
+                                '0'
+                            )
                         );
                     } else {
                         printer.print(
-                                String.valueOf(c)
+                            String.valueOf(c)
                         );
                     }
             }
@@ -643,7 +643,7 @@ public final class Properties implements CanBeEmpty,
     @Override
     public boolean equals(final Object other) {
         return this == other ||
-                other instanceof Properties && this.equals0((Properties) other);
+            other instanceof Properties && this.equals0((Properties) other);
     }
 
     private boolean equals0(final Properties properties) {
@@ -668,11 +668,11 @@ public final class Properties implements CanBeEmpty,
 
         for (final JsonNode child : node.objectOrFail().children()) {
             properties = properties.set(
-                    PropertiesPath.parse(
-                            child.name()
-                                    .value()
-                    ),
-                    child.stringOrFail()
+                PropertiesPath.parse(
+                    child.name()
+                        .value()
+                ),
+                child.stringOrFail()
             );
         }
 
@@ -689,28 +689,28 @@ public final class Properties implements CanBeEmpty,
      */
     private JsonNode marshall(final JsonNodeMarshallContext context) {
         return JsonNode.object()
-                .setChildren(
-                        this.entries()
-                                .stream()
-                                .map(e -> JsonNode.string(
-                                                e.getValue()
-                                        ).setName(
-                                                JsonPropertyName.with(
-                                                        e.getKey()
-                                                                .value()
-                                                )
-                                        )
-                                )
-                                .collect(Collectors.toList())
-                );
+            .setChildren(
+                this.entries()
+                    .stream()
+                    .map(e -> JsonNode.string(
+                            e.getValue()
+                        ).setName(
+                            JsonPropertyName.with(
+                                e.getKey()
+                                    .value()
+                            )
+                        )
+                    )
+                    .collect(Collectors.toList())
+            );
     }
 
     static {
         JsonNodeContext.register(
-                JsonNodeContext.computeTypeName(Properties.class),
-                Properties::unmarshall,
-                Properties::marshall,
-                Properties.class
+            JsonNodeContext.computeTypeName(Properties.class),
+            Properties::unmarshall,
+            Properties::marshall,
+            Properties.class
         );
     }
 }

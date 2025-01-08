@@ -48,12 +48,12 @@ final public class PropertiesPath implements Path<PropertiesPath, PropertiesName
             for (final String component : path.split("\\.")) {
                 final PropertiesName name = PropertiesName.with(component);
                 result = null == result ?
-                        new PropertiesPath(component, name, NO_PARENT) :
-                        result.append(name);
+                    new PropertiesPath(component, name, NO_PARENT) :
+                    result.append(name);
             }
             return result == null ?
-                    new PropertiesPath(path, PropertiesName.with(path), NO_PARENT) :
-                    result;
+                new PropertiesPath(path, PropertiesName.with(path), NO_PARENT) :
+                result;
         } catch (final IllegalArgumentException cause) {
             throw new IllegalArgumentException("Failed to parse " + CharSequences.quote(path) + ", message: " + cause.getMessage(), cause);
         }

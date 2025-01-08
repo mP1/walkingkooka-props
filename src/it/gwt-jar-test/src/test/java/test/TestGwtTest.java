@@ -13,15 +13,15 @@ public class TestGwtTest extends GWTTestCase {
 
     public void testAssertEquals() {
         assertEquals(
-                1,
-                1
+            1,
+            1
         );
     }
 
     public void testProperties() {
         assertEquals(
-                Properties.EMPTY.isEmpty(),
-                true
+            Properties.EMPTY.isEmpty(),
+            true
         );
     }
 }

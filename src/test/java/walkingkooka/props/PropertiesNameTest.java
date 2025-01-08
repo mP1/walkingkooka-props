@@ -26,13 +26,13 @@ import walkingkooka.text.CaseSensitivity;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 final public class PropertiesNameTest implements ClassTesting2<PropertiesName>,
-        NameTesting<PropertiesName, PropertiesName> {
+    NameTesting<PropertiesName, PropertiesName> {
 
     @Test
     public void testCreateContainsSeparatorFails() {
         assertThrows(
-                IllegalArgumentException.class,
-                () -> PropertiesName.with("xyz" + PropertiesPath.SEPARATOR.string())
+            IllegalArgumentException.class,
+            () -> PropertiesName.with("xyz" + PropertiesPath.SEPARATOR.string())
         );
     }
 
@@ -44,7 +44,7 @@ final public class PropertiesNameTest implements ClassTesting2<PropertiesName>,
         final PropertiesName d4 = PropertiesName.with("d4");
 
         this.compareToArraySortAndCheck(d4, a1, c3, b2,
-                a1, b2, c3, d4);
+            a1, b2, c3, d4);
     }
 
     @Override
