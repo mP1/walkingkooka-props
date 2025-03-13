@@ -82,6 +82,46 @@ final public class PropertiesPathTest implements PathTesting<PropertiesPath, Pro
     }
 
     @Test
+    public void testAppendName() {
+        final PropertiesPath path = PropertiesPath.parse("one.two.three")
+            .append(
+                PropertiesName.with("four")
+            );
+        this.nameCheck(
+            path,
+            PropertiesName.with("four")
+        );
+        this.valueCheck(
+            path,
+            "one.two.three.four"
+        );
+        this.parentCheck(
+            path,
+            "one.two.three"
+        );
+    }
+
+    @Test
+    public void testAppendPaths() {
+        final PropertiesPath path = PropertiesPath.parse("one.two.three")
+            .append(
+                PropertiesPath.parse("four.five")
+            );
+        this.nameCheck(
+            path,
+            PropertiesName.with("five")
+        );
+        this.valueCheck(
+            path,
+            "one.two.three.four.five"
+        );
+        this.parentCheck(
+            path,
+            "one.two.three.four"
+        );
+    }
+
+    @Test
     public void testEqualsDifferentPath() {
         this.checkNotEquals(PropertiesPath.parse("different.property"));
     }
