@@ -19,6 +19,7 @@ package walkingkooka.props;
 
 
 import walkingkooka.Cast;
+import walkingkooka.InvalidCharacterException;
 import walkingkooka.naming.Name;
 import walkingkooka.text.CaseSensitivity;
 import walkingkooka.text.CharSequences;
@@ -39,9 +40,13 @@ final public class PropertiesName implements Name,
      */
     static PropertiesName with(final String name) {
         CharSequences.failIfNullOrEmpty(name, "name");
-        if (-1 != name.indexOf(PropertiesPath.SEPARATOR.character())) {
-            throw new IllegalArgumentException("Name " + CharSequences.quote(name) +
-                " cannot contain " + CharSequences.quoteIfChars(PropertiesPath.SEPARATOR.character()));
+
+        final int separator = name.indexOf(PropertiesPath.SEPARATOR.character());
+        if (-1 != separator) {
+            throw new InvalidCharacterException(
+                name,
+                separator
+            );
         }
 
         return new PropertiesName(name);
