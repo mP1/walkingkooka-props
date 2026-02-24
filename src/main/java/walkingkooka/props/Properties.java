@@ -247,7 +247,7 @@ public final class Properties implements CanBeEmpty,
                                 }
                                 nextChar = c;
                                 break;
-                            case '\\':
+                            case BACKSLASH:
                                 charMode = MODE_CHAR_BACKSPACE_ESCAPING;
                                 break;
                             default:
@@ -258,11 +258,11 @@ public final class Properties implements CanBeEmpty,
                     case MODE_CHAR_BACKSPACE_ESCAPING:
                         switch (c) {
                             case 'b':
-                                nextChar = '\b';
+                                nextChar = BELL;
                                 charMode = MODE_CHAR;
                                 break;
                             case 'f':
-                                nextChar = '\f';
+                                nextChar = FORMFEED;
                                 charMode = MODE_CHAR;
                                 break;
                             case 'n':
@@ -274,13 +274,13 @@ public final class Properties implements CanBeEmpty,
                                 charMode = MODE_CHAR;
                                 break;
                             case 't':
-                                nextChar = '\t';
+                                nextChar = TAB;
                                 charMode = MODE_CHAR;
                                 break;
                             case 'u':
                                 charMode = MODE_CHAR_UNICODE_0;
                                 break;
-                            case '\\':
+                            case BACKSLASH:
                                 charMode = MODE_CHAR;
                                 nextChar = c;
                                 break;
@@ -533,11 +533,11 @@ public final class Properties implements CanBeEmpty,
 
         switch (c) {
             case '\0':
-            case '\b':
-            case '\f':
+            case BELL:
+            case FORMFEED:
             case NL:
             case CR:
-            case '\t':
+            case TAB:
             case ' ':
                 whitespace = true;
                 break;
@@ -553,17 +553,25 @@ public final class Properties implements CanBeEmpty,
         return COMMENT_EXCLAMATION == c || COMMENT_HASH == c;
     }
 
+    private static final char BACKSLASH = '\\';
+
+    private static final char BELL = '\b';
+
     private static final char COMMENT_EXCLAMATION = '!';
 
     private static final char COMMENT_HASH = '#';
 
-    private static final char NL = '\n';
-
     private static final char CR = '\r';
+
+    private static final char FORMFEED = '\f';
+
+    private static final char NL = '\n';
 
     private static final char SEPARATOR_COLON = ':';
 
     private static final char SEPARATOR_EQUALS_SIGN = '=';
+
+    private static final char TAB = '\t';
 
     // TreePrintable....................................................................................................
 
@@ -602,13 +610,13 @@ public final class Properties implements CanBeEmpty,
         for (int i = 0; i < length; i++) {
             final char c = value.charAt(i);
             switch (c) {
-                case '\b':
+                case BELL:
                     printer.print("\\b");
                     break;
-                case '\f':
+                case FORMFEED:
                     printer.print("\\f");
                     break;
-                case '\t':
+                case TAB:
                     printer.print("\\t");
                     break;
                 case NL:
@@ -617,7 +625,7 @@ public final class Properties implements CanBeEmpty,
                 case CR:
                     printer.print("\\r");
                     break;
-                case '\\':
+                case BACKSLASH:
                     printer.print("\\\\");
                     break;
                 default:
