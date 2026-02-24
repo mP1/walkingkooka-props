@@ -403,7 +403,7 @@ public final class Properties implements CanBeEmpty,
                             switch (nextChar) {
                                 case SEPARATOR_EQUALS_SIGN:
                                 case SEPARATOR_COLON:
-                                    key = key(token.toString().trim());
+                                    key = PropertiesPath.parse(token.toString().trim());
                                     token = new StringBuilder();
                                     value = "";
                                     tokenMode = MODE_TOKEN_VALUE;
@@ -551,10 +551,6 @@ public final class Properties implements CanBeEmpty,
 
     private static boolean isComment(final char c) {
         return COMMENT_EXCLAMATION == c || COMMENT_HASH == c;
-    }
-
-    private static PropertiesPath key(final String text) {
-        return PropertiesPath.parse(text);
     }
 
     private static final char COMMENT_EXCLAMATION = '!';
