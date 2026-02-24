@@ -24,7 +24,10 @@ import walkingkooka.collect.set.Sets;
 import walkingkooka.text.CharSequences;
 import walkingkooka.text.CharacterConstant;
 import walkingkooka.text.HasText;
+import walkingkooka.text.LineEnding;
 import walkingkooka.text.printer.IndentingPrinter;
+import walkingkooka.text.printer.Printer;
+import walkingkooka.text.printer.Printers;
 import walkingkooka.text.printer.TreePrintable;
 import walkingkooka.tree.json.JsonNode;
 import walkingkooka.tree.json.JsonPropertyName;
@@ -555,6 +558,8 @@ public final class Properties implements CanBeEmpty,
 
     private static final char BACKSLASH = '\\';
 
+    private static final String BACKSLASH_STRING = String.valueOf('\\');
+
     private static final char BELL = '\b';
 
     private static final char COMMENT_EXCLAMATION = '!';
@@ -562,6 +567,8 @@ public final class Properties implements CanBeEmpty,
     private static final char COMMENT_HASH = '#';
 
     private static final char CR = '\r';
+
+    private static final LineEnding EOL = LineEnding.CRNL;
 
     private static final char FORMFEED = '\f';
 
@@ -666,7 +673,86 @@ public final class Properties implements CanBeEmpty,
 
     @Override
     public String toString() {
-        return this.pathToValue.toString();
+        final StringBuilder b = new StringBuilder();
+        final Printer printer = Printers.stringBuilder(
+            b,
+            EOL
+        );
+
+        // print escaped value
+        for (final Entry<PropertiesPath, String> entry : this.entries()) {
+            printer.print(entry.getKey().value());
+            printer.print(SEPARATOR);
+
+            final String value = entry.getValue();
+            final int length = value.length();
+
+            LineEnding lineEnding = null;
+
+            for (int i = 0; i < length; i++) {
+                final char c = value.charAt(i);
+
+                final String print;
+
+                switch (c) {
+                    case BELL:
+                        print = "\\b";
+                        break;
+                    case FORMFEED:
+                        print = "\\f";
+                        break;
+                    case TAB:
+                        print = "\\t";
+                        break;
+                    case NL:
+                        print = null;
+                        lineEnding = LineEnding.CR == lineEnding ?
+                            LineEnding.CRNL :
+                            LineEnding.NL;
+                        break;
+                    case CR:
+                        print = null;
+                        lineEnding = LineEnding.CR;
+                        break;
+                    case BACKSLASH:
+                        print = BACKSLASH_STRING;
+                        break;
+                    default:
+                        if (c < ' ' || c > 0x80) {
+                            print = "\\u"
+                                .concat(
+                                CharSequences.padLeft(
+                                    Integer.toHexString((c)),
+                                    4,
+                                    '0'
+                                ).toString()
+                            );
+                        } else {
+                            print = String.valueOf(c);
+                        }
+                        break;
+                }
+
+                if(null != print) {
+                    if (null != lineEnding) {
+                        printer.print(BACKSLASH_STRING);
+                        printer.print(lineEnding);
+                        lineEnding = null;
+                    }
+                    printer.print(print);
+                }
+            }
+
+            if (null != lineEnding) {
+                printer.print(BACKSLASH_STRING);
+                printer.print(lineEnding);
+            }
+            printer.println();
+        }
+
+        printer.flush();
+
+        return b.toString();
     }
 
     // JsonNodeContext...................................................................................................
