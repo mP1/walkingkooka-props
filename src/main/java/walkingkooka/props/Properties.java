@@ -65,7 +65,7 @@ public final class Properties implements CanBeEmpty,
     public Optional<String> get(final PropertiesPath path) {
         return Optional.ofNullable(
             this.pathToValue.get(
-                check(path)
+                Objects.requireNonNull(path, "path")
             )
         );
     }
@@ -76,7 +76,7 @@ public final class Properties implements CanBeEmpty,
      */
     public Properties set(final PropertiesPath path,
                           final String value) {
-        check(path);
+        Objects.requireNonNull(path, "path");
         Objects.requireNonNull(value, "value");
 
         final Map<PropertiesPath, String> pathToValue = this.pathToValue;
@@ -104,7 +104,7 @@ public final class Properties implements CanBeEmpty,
      * change leaving the original unchanged
      */
     public Properties remove(final PropertiesPath path) {
-        check(path);
+        Objects.requireNonNull(path, "path");
 
         final Map<PropertiesPath, String> pathToValue = this.pathToValue;
         final Properties removed;
@@ -124,10 +124,6 @@ public final class Properties implements CanBeEmpty,
         }
 
         return removed;
-    }
-
-    private static PropertiesPath check(final PropertiesPath path) {
-        return Objects.requireNonNull(path, "path");
     }
 
     /**
