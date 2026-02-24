@@ -1025,6 +1025,19 @@ public final class PropertiesTest implements ClassTesting<Properties>,
         );
     }
 
+    @Test
+    public void testParseToStringRoundtrip() {
+        final Properties properties = Properties.parse(
+            "key.111=line1\\\nline2\r\n" +
+                "key.222=value2\r\n"
+        );
+
+        this.parseStringAndCheck(
+            properties.toString(),
+            properties
+        );
+    }
+
     @Override
     public Properties parseString(final String text) {
         return Properties.parse(text);
@@ -1298,24 +1311,100 @@ public final class PropertiesTest implements ClassTesting<Properties>,
 
     @Test
     public void testToString() {
-        final PropertiesPath key1 = PropertiesPath.parse("key.111");
-        final String value1 = "*value*111";
-
-        final PropertiesPath key2 = PropertiesPath.parse("key.222");
-        final String value2 = "*value*222";
-
-        final Map<PropertiesPath, String> map = Maps.of(
-            key1,
-            value1,
-            key2,
-            value2
-        );
-
         this.toStringAndCheck(
             new Properties(
-                map
+                Maps.of(
+                    PropertiesPath.parse("key.111"),
+                    "*value*111",
+                    PropertiesPath.parse("key.222"),
+                    "*value222*"
+                )
             ),
-            map.toString()
+            "key.111=*value*111\r\n" +
+                "key.222=*value222*\r\n"
+        );
+    }
+
+    @Test
+    public void testToStringBell() {
+        this.toStringAndCheck(
+            new Properties(
+                Maps.of(
+                    PropertiesPath.parse("key.111"),
+                    "value\b",
+                    PropertiesPath.parse("key.222"),
+                    "value2"
+                )
+            ),
+            "key.111=value\\b\r\n" +
+                "key.222=value2\r\n"
+        );
+    }
+
+    @Test
+    public void testToStringTab() {
+        this.toStringAndCheck(
+            new Properties(
+                Maps.of(
+                    PropertiesPath.parse("key.111"),
+                    "value\t",
+                    PropertiesPath.parse("key.222"),
+                    "value2"
+                )
+            ),
+            "key.111=value\\t\r\n" +
+                "key.222=value2\r\n"
+        );
+    }
+
+    @Test
+    public void testToStringCr() {
+        this.toStringAndCheck(
+            new Properties(
+                Maps.of(
+                    PropertiesPath.parse("key.111"),
+                    "line1\rline2",
+                    PropertiesPath.parse("key.222"),
+                    "value2"
+                )
+            ),
+            "key.111=line1\\\rline2\r\n" +
+                "key.222=value2\r\n"
+        );
+    }
+
+    // key.111=line1\
+    // line2
+    // key.222=value2
+    @Test
+    public void testToStringCrNl() {
+        this.toStringAndCheck(
+            new Properties(
+                Maps.of(
+                    PropertiesPath.parse("key.111"),
+                    "line1\r\nline2",
+                    PropertiesPath.parse("key.222"),
+                    "value2"
+                )
+            ),
+            "key.111=line1\\\r\nline2\r\n" +
+                "key.222=value2\r\n"
+        );
+    }
+
+    @Test
+    public void testToStringNl() {
+        this.toStringAndCheck(
+            new Properties(
+                Maps.of(
+                    PropertiesPath.parse("key.111"),
+                    "line1\nline2",
+                    PropertiesPath.parse("key.222"),
+                    "value2"
+                )
+            ),
+            "key.111=line1\\\nline2\r\n" +
+                "key.222=value2\r\n"
         );
     }
 
@@ -1371,7 +1460,8 @@ public final class PropertiesTest implements ClassTesting<Properties>,
                 PropertiesPath.parse("2nd"),
                 "222"
             ),
-            "{hello=world, 2nd=222}"
+            "hello=world\r\n" +
+                "2nd=222\r\n"
         );
     }
 
