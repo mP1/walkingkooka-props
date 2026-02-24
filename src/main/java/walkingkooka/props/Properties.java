@@ -223,8 +223,8 @@ public final class Properties implements CanBeEmpty,
                 switch (charMode) {
                     case MODE_CHAR:
                         switch (c) {
-                            case '\n':
-                            case '\r':
+                            case NL:
+                            case CR:
                                 // not in escape mode must be end of key/value
                                 if (null != key) {
                                     if (null == value) {
@@ -266,11 +266,11 @@ public final class Properties implements CanBeEmpty,
                                 charMode = MODE_CHAR;
                                 break;
                             case 'n':
-                                nextChar = '\n';
+                                nextChar = NL;
                                 charMode = MODE_CHAR;
                                 break;
                             case 'r':
-                                nextChar = '\r';
+                                nextChar = CR;
                                 charMode = MODE_CHAR;
                                 break;
                             case 't':
@@ -284,7 +284,7 @@ public final class Properties implements CanBeEmpty,
                                 charMode = MODE_CHAR;
                                 nextChar = c;
                                 break;
-                            case '\r':
+                            case CR:
                                 value = concat(
                                     value,
                                     token
@@ -292,7 +292,7 @@ public final class Properties implements CanBeEmpty,
                                 token = new StringBuilder();
                                 charMode = MODE_CHAR_BACKSPACE_ESCAPING_CR;
                                 break;
-                            case '\n':
+                            case NL:
                                 value = concat(
                                     value,
                                     token
@@ -308,7 +308,7 @@ public final class Properties implements CanBeEmpty,
                         break;
                     case MODE_CHAR_BACKSPACE_ESCAPING_CR:
                         switch (c) {
-                            case '\n': // BACKSLASH CR NL
+                            case NL: // BACKSLASH CR NL
                                 nextChar = c;
                                 charMode = MODE_CHAR;
                                 break;
@@ -320,8 +320,8 @@ public final class Properties implements CanBeEmpty,
                         break;
                     case MODE_CHAR_BACKSPACE_ESCAPING_NL:
                         switch (c) {
-                            case '\r': // BACKSLASH CR NL
-                                nextChar = '\r';
+                            case CR: // BACKSLASH CR NL
+                                nextChar = CR;
                                 charMode = MODE_CHAR;
                                 break;
                             default:
@@ -390,8 +390,8 @@ public final class Properties implements CanBeEmpty,
                             break;
                         case MODE_TOKEN_COMMENT:
                             switch (nextChar) {
-                                case '\n':
-                                case '\r':
+                                case NL:
+                                case CR:
                                     tokenMode = MODE_TOKEN;
                                     break;
                                 default:
@@ -401,15 +401,15 @@ public final class Properties implements CanBeEmpty,
                             break;
                         case MODE_TOKEN_KEY:
                             switch (nextChar) {
-                                case '=':
-                                case ':':
+                                case SEPARATOR_EQUALS_SIGN:
+                                case SEPARATOR_COLON:
                                     key = key(token.toString().trim());
                                     token = new StringBuilder();
                                     value = "";
                                     tokenMode = MODE_TOKEN_VALUE;
                                     break;
-                                case '\n':
-                                case '\r':
+                                case NL:
+                                case CR:
                                     // missing assignment and value
                                     throw new InvalidCharacterException(
                                         text,
@@ -422,8 +422,8 @@ public final class Properties implements CanBeEmpty,
                             break;
                         case MODE_TOKEN_VALUE:
                             switch (nextChar) {
-                                case '\n':
-                                case '\r':
+                                case NL:
+                                case CR:
                                     value = concat(
                                         value,
                                         token
@@ -535,8 +535,8 @@ public final class Properties implements CanBeEmpty,
             case '\0':
             case '\b':
             case '\f':
-            case '\n':
-            case '\r':
+            case NL:
+            case CR:
             case '\t':
             case ' ':
                 whitespace = true;
@@ -550,16 +550,28 @@ public final class Properties implements CanBeEmpty,
     }
 
     private static boolean isComment(final char c) {
-        return '!' == c || '#' == c;
+        return COMMENT_EXCLAMATION == c || COMMENT_HASH == c;
     }
 
     private static PropertiesPath key(final String text) {
         return PropertiesPath.parse(text);
     }
 
+    private static final char COMMENT_EXCLAMATION = '!';
+
+    private static final char COMMENT_HASH = '#';
+
+    private static final char NL = '\n';
+
+    private static final char CR = '\r';
+
+    private static final char SEPARATOR_COLON = ':';
+
+    private static final char SEPARATOR_EQUALS_SIGN = '=';
+
     // TreePrintable....................................................................................................
 
-    private final static CharacterConstant SEPARATOR = CharacterConstant.with('=');
+    private final static CharacterConstant SEPARATOR = CharacterConstant.with(SEPARATOR_EQUALS_SIGN);
 
     /**
      * Prints all the entries in this object to produce a <pre>*.properties</pre> file.
@@ -603,10 +615,10 @@ public final class Properties implements CanBeEmpty,
                 case '\t':
                     printer.print("\\t");
                     break;
-                case '\n':
+                case NL:
                     printer.print("\\n");
                     break;
-                case '\r':
+                case CR:
                     printer.print("\\r");
                     break;
                 case '\\':
