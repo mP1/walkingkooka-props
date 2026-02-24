@@ -23,6 +23,7 @@ import walkingkooka.collect.map.Maps;
 import walkingkooka.collect.set.Sets;
 import walkingkooka.text.CharSequences;
 import walkingkooka.text.CharacterConstant;
+import walkingkooka.text.HasText;
 import walkingkooka.text.printer.IndentingPrinter;
 import walkingkooka.text.printer.TreePrintable;
 import walkingkooka.tree.json.JsonNode;
@@ -45,6 +46,7 @@ import java.util.stream.Collectors;
  * An immutable key/value store of {@link String values}.
  */
 public final class Properties implements CanBeEmpty,
+    HasText,
     TreePrintable {
 
     /**
@@ -708,5 +710,12 @@ public final class Properties implements CanBeEmpty,
             Properties::marshall,
             Properties.class
         );
+    }
+
+    // HasText..........................................................................................................
+
+    @Override
+    public String text() {
+        return this.toString();
     }
 }

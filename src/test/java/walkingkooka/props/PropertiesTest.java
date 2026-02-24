@@ -27,6 +27,7 @@ import walkingkooka.reflect.ClassTesting;
 import walkingkooka.reflect.JavaVisibility;
 import walkingkooka.test.ParseStringTesting;
 import walkingkooka.text.CharSequences;
+import walkingkooka.text.HasTextTesting;
 import walkingkooka.text.Indentation;
 import walkingkooka.text.LineEnding;
 import walkingkooka.text.printer.TreePrintableTesting;
@@ -51,6 +52,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class PropertiesTest implements ClassTesting<Properties>,
     HashCodeEqualsDefinedTesting2<Properties>,
+    HasTextTesting,
     ToStringTesting<Properties>,
     CanBeEmptyTesting,
     JsonNodeMarshallingTesting<Properties>,
@@ -1354,6 +1356,22 @@ public final class PropertiesTest implements ClassTesting<Properties>,
         return Properties.EMPTY.set(
             PropertiesPath.parse("key.111"),
             "value111"
+        );
+    }
+
+    // HasText..........................................................................................................
+
+    @Test
+    public void testText() {
+        this.textAndCheck(
+            Properties.EMPTY.set(
+                PropertiesPath.parse("hello"),
+                "world"
+            ).set(
+                PropertiesPath.parse("2nd"),
+                "222"
+            ),
+            "{hello=world, 2nd=222}"
         );
     }
 
