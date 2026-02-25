@@ -22,6 +22,14 @@ import walkingkooka.test.Testing;
 public interface HasPropertiesTesting extends Testing {
 
     default void propertiesAndCheck(final HasProperties has,
+                                    final String expected) {
+        this.propertiesAndCheck(
+            has,
+            Properties.parse(expected)
+        );
+    }
+
+    default void propertiesAndCheck(final HasProperties has,
                                     final Properties properties) {
         this.checkEquals(
             properties,
