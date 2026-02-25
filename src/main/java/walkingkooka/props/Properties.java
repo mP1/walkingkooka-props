@@ -38,11 +38,11 @@ import walkingkooka.tree.json.marshall.JsonNodeUnmarshallContext;
 import java.io.Reader;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.stream.Collectors;
 
 /**
@@ -56,12 +56,15 @@ public final class Properties implements CanBeEmpty,
     /**
      * An empty {@link Properties}.
      */
-    public final static Properties EMPTY = new Properties(Maps.empty());
+    public final static Properties EMPTY = new Properties(
+        Maps.sorted()
+    );
 
     /**
      * Package private ctor
      */
-    Properties(final Map<PropertiesPath, String> pathToValue) {
+    // @VisibleForTesting
+    Properties(final SortedMap<PropertiesPath, String> pathToValue) {
         this.pathToValue = pathToValue;
     }
 
@@ -85,14 +88,14 @@ public final class Properties implements CanBeEmpty,
         Objects.requireNonNull(path, "path");
         Objects.requireNonNull(value, "value");
 
-        final Map<PropertiesPath, String> pathToValue = this.pathToValue;
+        final SortedMap<PropertiesPath, String> pathToValue = this.pathToValue;
         final Properties setOrReplaced;
 
         final Object old = pathToValue.get(path);
         if (value.equals(old)) {
             setOrReplaced = this;
         } else {
-            final Map<PropertiesPath, String> copy = Maps.ordered();
+            final SortedMap<PropertiesPath, String> copy = Maps.sorted();
             copy.putAll(pathToValue);
             copy.put(
                 path,
@@ -112,14 +115,14 @@ public final class Properties implements CanBeEmpty,
     public Properties remove(final PropertiesPath path) {
         Objects.requireNonNull(path, "path");
 
-        final Map<PropertiesPath, String> pathToValue = this.pathToValue;
+        final SortedMap<PropertiesPath, String> pathToValue = this.pathToValue;
         final Properties removed;
 
         if (pathToValue.containsKey(path)) {
             if (1 == pathToValue.size()) {
                 removed = EMPTY;
             } else {
-                final Map<PropertiesPath, String> copy = Maps.ordered();
+                final SortedMap<PropertiesPath, String> copy = Maps.sorted();
                 copy.putAll(pathToValue);
                 copy.remove(path);
 
@@ -173,7 +176,7 @@ public final class Properties implements CanBeEmpty,
     }
 
     // @VisibleForTesting
-    final Map<PropertiesPath, String> pathToValue;
+    final SortedMap<PropertiesPath, String> pathToValue;
 
     // parse............................................................................................................
 
