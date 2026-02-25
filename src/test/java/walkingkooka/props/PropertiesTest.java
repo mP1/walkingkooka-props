@@ -1056,6 +1056,96 @@ public final class PropertiesTest implements ClassTesting<Properties>,
         return thrown;
     }
 
+    // setAll...........................................................................................................
+
+    @Test
+    public void testSetAllWithNullPrefixFails() {
+        assertThrows(
+            NullPointerException.class,
+            () -> Properties.EMPTY.setAll(
+                null,
+                Properties.EMPTY
+            )
+        );
+    }
+
+    @Test
+    public void testSetAllWithNullPropertiesFails() {
+        assertThrows(
+            NullPointerException.class,
+            () -> Properties.EMPTY.setAll(
+                PropertiesPath.parse("prefix"),
+                null
+            )
+        );
+    }
+
+    @Test
+    public void testSetAllWithEmpty() {
+        final Properties properties = Properties.EMPTY.set(
+            PropertiesPath.parse("hello"),
+            "world"
+        );
+        assertSame(
+            properties,
+            properties.setAll(
+                PropertiesPath.parse("prefix"),
+                Properties.EMPTY
+            )
+        );
+    }
+
+    @Test
+    public void testSetAll() {
+        this.setAllAndCheck(
+            "hello=world",
+            "prefix",
+            "a=1\nb=2",
+            "hello=world\n" +
+                "prefix.a=1\n" +
+                "prefix.b=2\n"
+        );
+    }
+
+    @Test
+    public void testSetAll2() {
+        this.setAllAndCheck(
+            "hello=world\nprefix.a=1\nprefix.c=3",
+            "prefix",
+            "a=1\nb=2",
+            "hello=world\n" +
+                "prefix.a=1\n" +
+                "prefix.b=2\n" +
+                "prefix.c=3\n"
+        );
+    }
+
+    private void setAllAndCheck(final String properties,
+                                final String prefix,
+                                final String all,
+                                final String expected) {
+        this.setAllAndCheck(
+            Properties.parse(properties),
+            PropertiesPath.parse(prefix),
+            Properties.parse(all),
+            Properties.parse(expected)
+        );
+    }
+
+    private void setAllAndCheck(final Properties properties,
+                                final PropertiesPath prefix,
+                                final Properties all,
+                                final Properties expected) {
+        this.checkEquals(
+            expected,
+            properties.setAll(
+                prefix,
+                all
+            ),
+            properties + "\nprefix=" + prefix + "\n," + all
+        );
+    }
+
     // view.............................................................................................................
 
     @Test
