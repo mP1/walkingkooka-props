@@ -53,6 +53,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public final class PropertiesTest implements ClassTesting<Properties>,
     HashCodeEqualsDefinedTesting2<Properties>,
     HasTextTesting,
+    HasPropertiesTesting,
     ToStringTesting<Properties>,
     CanBeEmptyTesting,
     JsonNodeMarshallingTesting<Properties>,
@@ -1453,6 +1454,23 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     @Test
     public void testText() {
         this.textAndCheck(
+            Properties.EMPTY.set(
+                PropertiesPath.parse("hello"),
+                "world"
+            ).set(
+                PropertiesPath.parse("2nd"),
+                "222"
+            ),
+            "hello=world\r\n" +
+                "2nd=222\r\n"
+        );
+    }
+
+    // HasProperties....................................................................................................
+
+    @Test
+    public void testProperties() {
+        this.propertiesAndCheck(
             Properties.EMPTY.set(
                 PropertiesPath.parse("hello"),
                 "world"
