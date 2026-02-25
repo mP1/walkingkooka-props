@@ -50,6 +50,7 @@ import java.util.stream.Collectors;
  */
 public final class Properties implements CanBeEmpty,
     HasText,
+    HasProperties,
     TreePrintable {
 
     /**
@@ -819,5 +820,12 @@ public final class Properties implements CanBeEmpty,
     @Override
     public String text() {
         return this.toString();
+    }
+
+    // HasProperties....................................................................................................
+
+    @Override
+    public Properties properties() {
+        return this;
     }
 }
