@@ -31,10 +31,6 @@ import walkingkooka.text.HasTextTesting;
 import walkingkooka.text.Indentation;
 import walkingkooka.text.LineEnding;
 import walkingkooka.text.printer.TreePrintableTesting;
-import walkingkooka.tree.json.JsonNode;
-import walkingkooka.tree.json.JsonPropertyName;
-import walkingkooka.tree.json.marshall.JsonNodeMarshallingTesting;
-import walkingkooka.tree.json.marshall.JsonNodeUnmarshallContext;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
@@ -58,7 +54,6 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     HasPropertiesTesting,
     ToStringTesting<Properties>,
     CanBeEmptyTesting,
-    JsonNodeMarshallingTesting<Properties>,
     TreePrintableTesting,
     ParseStringTesting<Properties> {
 
@@ -1590,46 +1585,6 @@ public final class PropertiesTest implements ClassTesting<Properties>,
             ),
             "key.111=line1\\\nline2\r\n" +
                 "key.222=value2\r\n"
-        );
-    }
-
-    // JSON.............................................................................................................
-
-    @Test
-    public void testMarshall() {
-        this.marshallAndCheck(
-            Properties.EMPTY.set(
-                PropertiesPath.parse("key.111"),
-                "value111"
-            ).set(
-                PropertiesPath.parse("key.222"),
-                "value222"
-            ),
-            JsonNode.object()
-                .set(
-                    JsonPropertyName.with("key.111"),
-                    JsonNode.string("value111")
-                ).set(
-                    JsonPropertyName.with("key.222"),
-                    JsonNode.string("value222")
-                )
-        );
-    }
-
-    @Override
-    public Properties unmarshall(final JsonNode json,
-                                 final JsonNodeUnmarshallContext context) {
-        return Properties.unmarshall(
-            json,
-            context
-        );
-    }
-
-    @Override
-    public Properties createJsonNodeMarshallingValue() {
-        return Properties.EMPTY.set(
-            PropertiesPath.parse("key.111"),
-            "value111"
         );
     }
 

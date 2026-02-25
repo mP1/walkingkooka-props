@@ -29,11 +29,6 @@ import walkingkooka.text.printer.IndentingPrinter;
 import walkingkooka.text.printer.Printer;
 import walkingkooka.text.printer.Printers;
 import walkingkooka.text.printer.TreePrintable;
-import walkingkooka.tree.json.JsonNode;
-import walkingkooka.tree.json.JsonPropertyName;
-import walkingkooka.tree.json.marshall.JsonNodeContext;
-import walkingkooka.tree.json.marshall.JsonNodeMarshallContext;
-import walkingkooka.tree.json.marshall.JsonNodeUnmarshallContext;
 
 import java.io.Reader;
 import java.util.Collection;
@@ -43,7 +38,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
-import java.util.stream.Collectors;
 
 /**
  * An immutable key/value store of {@link String values}.
@@ -815,65 +809,6 @@ public final class Properties implements CanBeEmpty,
         printer.flush();
 
         return b.toString();
-    }
-
-    // JsonNodeContext...................................................................................................
-
-    /**
-     * Factory that creates a {@link Properties} from a {@link JsonNode}.
-     */
-    static Properties unmarshall(final JsonNode node,
-                                 final JsonNodeUnmarshallContext context) {
-        Objects.requireNonNull(node, "node");
-
-        Properties properties = EMPTY;
-
-        for (final JsonNode child : node.objectOrFail().children()) {
-            properties = properties.set(
-                PropertiesPath.parse(
-                    child.name()
-                        .value()
-                ),
-                child.stringOrFail()
-            );
-        }
-
-        return properties;
-    }
-
-    /**
-     * <pre>
-     * {
-     *   "key-1a": "value-1a",
-     *   "key-2b": "value-2b"
-     * }
-     * </pre>
-     */
-    private JsonNode marshall(final JsonNodeMarshallContext context) {
-        return JsonNode.object()
-            .setChildren(
-                this.entries()
-                    .stream()
-                    .map(e -> JsonNode.string(
-                            e.getValue()
-                        ).setName(
-                            JsonPropertyName.with(
-                                e.getKey()
-                                    .value()
-                            )
-                        )
-                    )
-                    .collect(Collectors.toList())
-            );
-    }
-
-    static {
-        JsonNodeContext.register(
-            JsonNodeContext.computeTypeName(Properties.class),
-            Properties::unmarshall,
-            Properties::marshall,
-            Properties.class
-        );
     }
 
     // HasText..........................................................................................................
