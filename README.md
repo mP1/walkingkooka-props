@@ -6,4 +6,4 @@
 ![](https://tokei.rs/b1/github/mP1/walkingkooka-props)
 [![J2CL compatible](https://img.shields.io/badge/J2CL-compatible-brightgreen.svg)](https://github.com/mP1/j2cl-central)
 
-A simple repo that holds a better immutable/functional/type-safe Properties abstraction than java.util.Properties
+A simple repo that holds a better immutable/functional/type-safe Properties abstraction than `java.util.Properties`
