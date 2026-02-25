@@ -24,8 +24,8 @@ public interface HasPropertiesTesting extends Testing {
     default void propertiesAndCheck(final HasProperties has,
                                     final Properties properties) {
         this.checkEquals(
-            has.properties(),
             properties,
+            has.properties(),
             has::toString
         );
     }
