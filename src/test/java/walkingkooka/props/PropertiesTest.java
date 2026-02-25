@@ -45,6 +45,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -77,7 +79,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
 
         this.getAndCheck(
             new Properties(
-                Maps.of(
+                map(
                     key,
                     value
                 )
@@ -91,7 +93,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     public void testGetUnknown() {
         this.getAndCheck(
             new Properties(
-                Maps.of(
+                map(
                     PropertiesPath.parse("key.1"),
                     "value1"
                 )
@@ -141,7 +143,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
         final String value = "*value*123";
 
         final Properties properties = new Properties(
-            Maps.of(
+            map(
                 key,
                 value
             )
@@ -165,7 +167,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
             Properties.EMPTY,
             key,
             value,
-            Maps.of(
+            map(
                 key,
                 value
             )
@@ -182,14 +184,14 @@ public final class PropertiesTest implements ClassTesting<Properties>,
 
         this.setAndCheck(
             new Properties(
-                Maps.of(
+                map(
                     key1,
                     value1
                 )
             ),
             key2,
             value2,
-            Maps.of(
+            map(
                 key1,
                 value1,
                 key2,
@@ -243,7 +245,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
         final PropertiesPath key = PropertiesPath.parse("key.111");
         final String value = "*value*111";
         final Properties properties = new Properties(
-            Maps.of(
+            map(
                 key,
                 value
             )
@@ -267,7 +269,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
 
         this.removeAndCheck(
             new Properties(
-                Maps.of(
+                map(
                     key1,
                     value1,
                     key2,
@@ -275,7 +277,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
                 )
             ),
             key2,
-            Maps.of(
+            map(
                 key1,
                 value1
             )
@@ -290,7 +292,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
 
         assertSame(
             new Properties(
-                Maps.of(
+                map(
                     key1,
                     value1
                 )
@@ -332,7 +334,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
 
         this.checkEquals(
             new Properties(
-                Maps.of(
+                map(
                     key1,
                     value1,
                     key2,
@@ -367,7 +369,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
 
         this.checkEquals(
             new Properties(
-                Maps.of(
+                map(
                     key1,
                     value1,
                     key2,
@@ -405,7 +407,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
 
         this.checkEquals(
             new Properties(
-                Maps.of(
+                map(
                     key1,
                     value1,
                     key2,
@@ -1314,7 +1316,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     public void testToString() {
         this.toStringAndCheck(
             new Properties(
-                Maps.of(
+                map(
                     PropertiesPath.parse("key.111"),
                     "*value*111",
                     PropertiesPath.parse("key.222"),
@@ -1330,7 +1332,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     public void testToStringBell() {
         this.toStringAndCheck(
             new Properties(
-                Maps.of(
+                map(
                     PropertiesPath.parse("key.111"),
                     "value\b",
                     PropertiesPath.parse("key.222"),
@@ -1346,7 +1348,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     public void testToStringTab() {
         this.toStringAndCheck(
             new Properties(
-                Maps.of(
+                map(
                     PropertiesPath.parse("key.111"),
                     "value\t",
                     PropertiesPath.parse("key.222"),
@@ -1362,7 +1364,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     public void testToStringCr() {
         this.toStringAndCheck(
             new Properties(
-                Maps.of(
+                map(
                     PropertiesPath.parse("key.111"),
                     "line1\rline2",
                     PropertiesPath.parse("key.222"),
@@ -1381,7 +1383,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     public void testToStringCrNl() {
         this.toStringAndCheck(
             new Properties(
-                Maps.of(
+                map(
                     PropertiesPath.parse("key.111"),
                     "line1\r\nline2",
                     PropertiesPath.parse("key.222"),
@@ -1397,7 +1399,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     public void testToStringNl() {
         this.toStringAndCheck(
             new Properties(
-                Maps.of(
+                map(
                     PropertiesPath.parse("key.111"),
                     "line1\nline2",
                     PropertiesPath.parse("key.222"),
@@ -1461,8 +1463,8 @@ public final class PropertiesTest implements ClassTesting<Properties>,
                 PropertiesPath.parse("2nd"),
                 "222"
             ),
-            "hello=world\r\n" +
-                "2nd=222\r\n"
+                "2nd=222\r\n" +
+                    "hello=world\r\n"
         );
     }
 
@@ -1500,5 +1502,47 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     @Override
     public Properties createObject() {
         return Properties.EMPTY;
+    }
+
+    private static SortedMap<PropertiesPath, String> map(final PropertiesPath name,
+                                                         final String value) {
+        return new TreeMap<>(
+            Maps.of(
+                name,
+                value
+            )
+        );
+    }
+
+    private static SortedMap<PropertiesPath, String> map(final PropertiesPath name,
+                                                         final String value,
+                                                         final PropertiesPath name2,
+                                                         final String value2) {
+        return new TreeMap<>(
+            Maps.of(
+                name,
+                value,
+                name2,
+                value2
+            )
+        );
+    }
+
+    private static SortedMap<PropertiesPath, String> map(final PropertiesPath name1,
+                                                         final String value1,
+                                                         final PropertiesPath name2,
+                                                         final String value2,
+                                                         final PropertiesPath name3,
+                                                         final String value3) {
+        return new TreeMap<>(
+            Maps.of(
+                name1,
+                value1,
+                name2,
+                value2,
+                name3,
+                value3
+            )
+        );
     }
 }
