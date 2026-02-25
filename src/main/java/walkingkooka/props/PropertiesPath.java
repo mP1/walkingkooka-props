@@ -151,4 +151,21 @@ final public class PropertiesPath implements Path<PropertiesPath, PropertiesName
     public String toString() {
         return this.path;
     }
+
+    // Properties.view..................................................................................................
+
+    // @Visible Properties.view
+    PropertiesPath subMapEndKey() {
+        final String path = this.path;
+        final int last = path.length() - 1;
+
+        return new PropertiesPath(
+            path.substring(
+                0,
+                last
+            )+ (char)(path.charAt(last) + 1),
+            null, // name
+            NO_PARENT
+        );
+    }
 }

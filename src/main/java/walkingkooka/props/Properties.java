@@ -168,6 +168,39 @@ public final class Properties implements CanBeEmpty,
     }
 
     /**
+     * Returns a {@link Properties with entries that begin with the given {@link PropertiesPath}}.
+     */
+    public Properties view(final PropertiesPath prefix) {
+        Objects.requireNonNull(prefix, "prefix");
+
+        final String prefixString = prefix.value();
+
+        final int after = prefixString.length() + 1;
+
+        final SortedMap<PropertiesPath, String> view = Maps.sorted();
+
+        for (final Entry<PropertiesPath, String> entry : this.pathToValue.tailMap(prefix).entrySet()) {
+            final PropertiesPath key = entry.getKey();
+            final String keyValue = key.value();
+
+            if (false == keyValue.startsWith(prefixString) || keyValue.length() < after) {
+                break;
+            }
+
+            view.put(
+                PropertiesPath.parse(
+                    keyValue.substring(after)
+                ),
+                entry.getValue()
+            );
+        }
+
+        return new Properties(view);
+    }
+
+    // CanBeEmpty.......................................................................................................
+
+    /**
      * Returns true if this properties is empty.
      */
     @Override
