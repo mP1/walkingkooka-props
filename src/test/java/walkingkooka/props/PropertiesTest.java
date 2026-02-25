@@ -1056,6 +1056,93 @@ public final class PropertiesTest implements ClassTesting<Properties>,
         return thrown;
     }
 
+    // view.............................................................................................................
+
+    @Test
+    public void testViewWithNullPrefixFails() {
+        assertThrows(
+            NullPointerException.class,
+            () -> Properties.EMPTY.view(null)
+        );
+    }
+
+    @Test
+    public void testViewWithPrefixBefore() {
+        this.viewAndCheck(
+            "zebra=1\n" +
+                "zebra2=2\n",
+            "prefix",
+            ""
+        );
+    }
+
+    @Test
+    public void testViewWithPrefixAfter() {
+        this.viewAndCheck(
+            "hello=1\n" +
+                "hello2=2\n",
+            "zebra",
+            ""
+        );
+    }
+
+    @Test
+    public void testViewWithPrefix() {
+        this.viewAndCheck(
+            "aaa=1\n" +
+                "bbb=2\n" +
+                "ccc=3\n",
+            "bbb",
+            ""
+        );
+    }
+
+    @Test
+    public void testViewWithPrefix2() {
+        this.viewAndCheck(
+            "aaa=1\n" +
+                "bbb.a=21\n" +
+                "bbb.b=22\n" +
+                "ccc=3\n",
+            "bbb.",
+            "a=21\n" +
+                "b=22\n"
+        );
+    }
+
+    @Test
+    public void testViewWithPrefix3() {
+        this.viewAndCheck(
+            "aaa=1\n" +
+                "bbb.a=21\n" +
+                "bbb.b=22\n" +
+                "ccc=3\n",
+            "bbb.",
+            "a=21\n" +
+                "b=22\n"
+        );
+    }
+
+    private void viewAndCheck(final String properties,
+                              final String path,
+                              final String expected) {
+        this.viewAndCheck(
+            Properties.parse(properties),
+            PropertiesPath.parse(path),
+            Properties.parse(expected)
+        );
+    }
+
+    private void viewAndCheck(final Properties properties,
+                              final PropertiesPath path,
+                              final Properties expected) {
+        this.checkEquals(
+            expected,
+            properties.view(path),
+            properties + " view " + path
+        );
+    }
+
     // TreePrintable....................................................................................................
 
     @Test
