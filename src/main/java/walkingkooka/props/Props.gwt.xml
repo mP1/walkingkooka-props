@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module>
     <inherits name="walkingkooka.j2cl.java.util.locale.Locale"/>
-
-    <source path="">
-        <exclude name="super/**"/>
-    </source>
-    <super-source path="super"/>
 </module>
