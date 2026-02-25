@@ -198,6 +198,31 @@ public final class Properties implements CanBeEmpty,
         return new Properties(view);
     }
 
+    /**
+     * Returns a {@link Properties} inserting the new values after adding the given prefix to their paths.
+     */
+    public Properties setAll(final PropertiesPath prefix,
+                             final Properties properties) {
+        Objects.requireNonNull(prefix, "prefix");
+        Objects.requireNonNull(properties, "properties");
+
+        final SortedMap<PropertiesPath, String> copy = Maps.sorted();
+        copy.putAll(this.pathToValue);
+
+        final String prefixString = prefix.value() + ".";
+
+        for (final Entry<PropertiesPath, String> nameAndValue : properties.entries()) {
+            copy.put(
+                PropertiesPath.parse(prefixString + nameAndValue.getKey()),
+                nameAndValue.getValue()
+            );
+        }
+
+        return this.pathToValue.equals(copy) ?
+            this :
+            new Properties(copy);
+    }
+
     // CanBeEmpty.......................................................................................................
 
     /**
