@@ -1381,7 +1381,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
         );
     }
 
-    // equals...........................................................................................................
+    // hashCode/equals..................................................................................................
 
     @Test
     public void testEqualsDifferent() {
@@ -1395,6 +1395,11 @@ public final class PropertiesTest implements ClassTesting<Properties>,
                     "*value*222"
                 )
         );
+    }
+
+    @Override
+    public Properties createObject() {
+        return Properties.EMPTY;
     }
 
     // toString.........................................................................................................
@@ -1572,7 +1577,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
         );
     }
 
-    // ClassTesting.....................................................................................................
+    // class............................................................................................................
 
     @Override
     public Class<Properties> type() {
@@ -1584,12 +1589,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
         return JavaVisibility.PUBLIC;
     }
 
-    // HashCodeEqualsDefinedTesting2 ...................................................................................
-
-    @Override
-    public Properties createObject() {
-        return Properties.EMPTY;
-    }
+    // helpers...................... ...................................................................................
 
     private static SortedMap<PropertiesPath, String> map(final PropertiesPath name,
                                                          final String value) {
