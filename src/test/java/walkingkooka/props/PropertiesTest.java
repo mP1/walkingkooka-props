@@ -108,6 +108,32 @@ public final class PropertiesTest implements ClassTesting<Properties>,
         );
     }
 
+    // getOrFail........................................................................................................
+
+    @Test
+    public void testGetOrFailWithUnknown() {
+        assertThrows(
+            MissingPropertyException.class,
+            () -> Properties.EMPTY.getOrFail(
+                PropertiesPath.parse("unknown.key")
+            )
+        );
+    }
+
+    @Test
+    public void testGetOrFail() {
+        final PropertiesPath key = PropertiesPath.parse("key.1");
+        final String value = "value1";
+
+        this.checkEquals(
+            value,
+            Properties.EMPTY.set(
+                key,
+                value
+            ).getOrFail(key)
+        );
+    }
+
     // set..............................................................................................................
 
     @Test

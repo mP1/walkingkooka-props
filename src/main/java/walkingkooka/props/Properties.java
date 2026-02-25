@@ -73,6 +73,11 @@ public final class Properties implements CanBeEmpty,
         );
     }
 
+    public String getOrFail(final PropertiesPath path) {
+        return this.get(path)
+            .orElseThrow(() -> new MissingPropertyException(path));
+    }
+
     /**
      * Sets or replaces the string value for the given {@link PropertiesPath}, returning a {@link Properties} with the
      * change leaving the original unchanged
