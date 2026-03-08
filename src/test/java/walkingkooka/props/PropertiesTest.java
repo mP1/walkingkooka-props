@@ -878,6 +878,17 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     }
 
     @Test
+    public void testParseKeyValueBackslash() {
+        this.parseStringAndCheck(
+            "key1=\\\\hello",
+            Properties.EMPTY.set(
+                PropertiesPath.parse("key1"),
+                "\\hello"
+            )
+        );
+    }
+
+    @Test
     public void testParseKeyValueNulChar() {
         this.parseStringAndCheck(
             "key1=\\u0000",
@@ -1623,7 +1634,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
                     "\\world"
                 )
             ),
-            "hello=\\world\r\n"
+            "hello=\\\\world\r\n"
         );
     }
 
@@ -1641,6 +1652,32 @@ public final class PropertiesTest implements ClassTesting<Properties>,
             ),
                 "2nd=222\r\n" +
                     "hello=world\r\n"
+        );
+    }
+
+    @Test
+    public void testTextWithSlash() {
+        final Properties properties = Properties.EMPTY
+            .set(
+                PropertiesPath.parse("hello"),
+                "World \\at\\ 123"
+            );
+        this.textAndCheck(
+            properties,
+            "hello=World \\\\at\\\\ 123\r\n"
+        );
+    }
+
+    @Test
+    public void testTextAndParse() {
+        final Properties properties = Properties.EMPTY
+            .set(
+                PropertiesPath.parse("hello"),
+                "World \\at\\ 123"
+            );
+        this.parseStringAndCheck(
+            properties.toString(),
+            properties
         );
     }
 

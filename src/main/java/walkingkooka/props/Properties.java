@@ -776,7 +776,7 @@ public final class Properties implements CanBeEmpty,
                         lineEnding = LineEnding.CR;
                         break;
                     case BACKSLASH:
-                        print = BACKSLASH_STRING;
+                        print = "\\" + BACKSLASH_STRING; // escaped backslash
                         break;
                     default:
                         if (c < ' ' || c > 0x80) {
