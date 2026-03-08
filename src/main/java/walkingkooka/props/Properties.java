@@ -293,7 +293,7 @@ public final class Properties implements CanBeEmpty,
         final int MODE_TOKEN_KEY = 3;
         final int MODE_TOKEN_VALUE = 4;
 
-        int tokenMode = MODE_TOKEN;
+        int mode = MODE_TOKEN;
 
         for (int i = 0; i < length; i++) {
             char nextChar = 0;
@@ -324,7 +324,7 @@ public final class Properties implements CanBeEmpty,
 
                                     key = null;
                                     value = null;
-                                    tokenMode = MODE_TOKEN;
+                                    mode = MODE_TOKEN;
                                 }
                                 nextChar = c;
                                 break;
@@ -455,25 +455,25 @@ public final class Properties implements CanBeEmpty,
 
             switch (charMode) {
                 case MODE_CHAR:
-                    switch (tokenMode) {
+                    switch (mode) {
                         case MODE_TOKEN:
                             if (isWhitespace(nextChar)) {
                                 break;
                             }
                             if (isComment(nextChar)) {
-                                tokenMode = MODE_TOKEN_COMMENT;
+                                mode = MODE_TOKEN_COMMENT;
                                 break;
                             }
                             // starting key!
                             token = new StringBuilder()
                                 .append(nextChar);
-                            tokenMode = MODE_TOKEN_KEY;
+                            mode = MODE_TOKEN_KEY;
                             break;
                         case MODE_TOKEN_COMMENT:
                             switch (nextChar) {
                                 case NL:
                                 case CR:
-                                    tokenMode = MODE_TOKEN;
+                                    mode = MODE_TOKEN;
                                     break;
                                 default:
                                     // ignore other comment chars
@@ -487,7 +487,7 @@ public final class Properties implements CanBeEmpty,
                                     key = PropertiesPath.parse(token.toString().trim());
                                     token = new StringBuilder();
                                     value = "";
-                                    tokenMode = MODE_TOKEN_VALUE;
+                                    mode = MODE_TOKEN_VALUE;
                                     break;
                                 case NL:
                                 case CR:
@@ -516,7 +516,7 @@ public final class Properties implements CanBeEmpty,
                             }
                             break;
                         default:
-                            throw new IllegalStateException("Invalid token mode " + tokenMode);
+                            throw new IllegalStateException("Invalid token mode " + mode);
                     }
                     break;
                 default:
@@ -524,7 +524,7 @@ public final class Properties implements CanBeEmpty,
             }
         }
 
-        switch (tokenMode) {
+        switch (mode) {
             case MODE_TOKEN:
             case MODE_TOKEN_COMMENT:
                 break;
@@ -540,7 +540,7 @@ public final class Properties implements CanBeEmpty,
                 );
                 break;
             default:
-                throw new IllegalStateException("Invalid tokenMode " + tokenMode);
+                throw new IllegalStateException("Invalid tokenMode " + mode);
         }
 
         return properties;
