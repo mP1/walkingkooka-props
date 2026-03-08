@@ -849,9 +849,57 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     }
 
     @Test
+    public void testParseEsclCommentsCrEsclComment() {
+        this.parseStringAndCheck(
+            "! 111\r! 222",
+            Properties.EMPTY
+        );
+    }
+
+    @Test
+    public void testParseEsclCommentsNlEsclComment() {
+        this.parseStringAndCheck(
+            "! 111\n! 222",
+            Properties.EMPTY
+        );
+    }
+
+    @Test
+    public void testParseEsclCommentsCrNlEsclComment() {
+        this.parseStringAndCheck(
+            "! 111\r\n! 222",
+            Properties.EMPTY
+        );
+    }
+
+    @Test
     public void testParseHashComments() {
         this.parseStringAndCheck(
             "# 123",
+            Properties.EMPTY
+        );
+    }
+
+    @Test
+    public void testParseHashCommentsCrHashComments() {
+        this.parseStringAndCheck(
+            "# 111\r# 222",
+            Properties.EMPTY
+        );
+    }
+
+    @Test
+    public void testParseHashCommentsNlHashComments() {
+        this.parseStringAndCheck(
+            "# 111\n# 222",
+            Properties.EMPTY
+        );
+    }
+
+    @Test
+    public void testParseHashCommentsCrNlHashComments() {
+        this.parseStringAndCheck(
+            "# 111\r\n# 222",
             Properties.EMPTY
         );
     }
