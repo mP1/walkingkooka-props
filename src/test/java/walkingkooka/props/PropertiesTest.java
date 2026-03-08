@@ -57,6 +57,8 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     TreePrintableTesting,
     ParseStringTesting<Properties> {
 
+    private final String COMMENT = "Comment 123";
+
     // get..............................................................................................................
 
     @Test
@@ -74,6 +76,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
 
         this.getAndCheck(
             new Properties(
+                COMMENT,
                 map(
                     key,
                     value
@@ -88,6 +91,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     public void testGetUnknown() {
         this.getAndCheck(
             new Properties(
+                COMMENT,
                 map(
                     PropertiesPath.parse("key.1"),
                     "value1"
@@ -164,6 +168,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
         final String value = "*value*123";
 
         final Properties properties = new Properties(
+            COMMENT,
             map(
                 key,
                 value
@@ -205,6 +210,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
 
         this.setAndCheck(
             new Properties(
+                COMMENT,
                 map(
                     key1,
                     value1
@@ -266,6 +272,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
         final PropertiesPath key = PropertiesPath.parse("key.111");
         final String value = "*value*111";
         final Properties properties = new Properties(
+            COMMENT,
             map(
                 key,
                 value
@@ -290,6 +297,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
 
         this.removeAndCheck(
             new Properties(
+                COMMENT,
                 map(
                     key1,
                     value1,
@@ -313,6 +321,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
 
         assertSame(
             new Properties(
+                COMMENT,
                 map(
                     key1,
                     value1
@@ -338,6 +347,11 @@ public final class PropertiesTest implements ClassTesting<Properties>,
             removed.pathToValue,
             () -> properties + " " + key
         );
+
+        this.commentAndCheck(
+            removed,
+            properties.comment()
+        );
     }
 
     // all..............................................................................................................
@@ -355,6 +369,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
 
         this.checkEquals(
             new Properties(
+                Properties.NO_COMMENT,
                 map(
                     key1,
                     value1,
@@ -390,6 +405,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
 
         this.checkEquals(
             new Properties(
+                Properties.NO_COMMENT,
                 map(
                     key1,
                     value1,
@@ -428,6 +444,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
 
         this.checkEquals(
             new Properties(
+                Properties.NO_COMMENT,
                 map(
                     key1,
                     value1,
@@ -1176,6 +1193,11 @@ public final class PropertiesTest implements ClassTesting<Properties>,
             ),
             properties + "\nprefix=" + prefix + "\n," + all
         );
+
+        this.commentAndCheck(
+            expected,
+            properties.comment()
+        );
     }
 
     // view.............................................................................................................
@@ -1262,6 +1284,77 @@ public final class PropertiesTest implements ClassTesting<Properties>,
             expected,
             properties.view(path),
             properties + " view " + path
+        );
+    }
+
+    // comment.........................................................................................................
+
+    @Test
+    public void testSetCommentWithNullFails() {
+        assertThrows(
+            NullPointerException.class,
+            () -> Properties.EMPTY.setComment(null)
+        );
+    }
+
+    @Test
+    public void testSetCommentWithSame() {
+        final Properties properties = Properties.EMPTY;
+
+        assertSame(
+            properties,
+            properties.setComment(
+                properties.comment()
+            )
+        );
+    }
+
+    @Test
+    public void testSetCommentWithSame2() {
+        final Properties properties = new Properties(
+            COMMENT,
+            map(
+                PropertiesPath.parse("Hello"),
+                "World"
+            )
+        );
+
+        assertSame(
+            properties,
+            properties.setComment(COMMENT)
+        );
+    }
+
+    @Test
+    public void testSetCommentWithDifferent() {
+        final String different = "Different Comments 222";
+
+        this.setCommentAndCheck(
+            Properties.EMPTY,
+            different,
+            new Properties(
+                different,
+                Maps.sorted()
+            )
+        );
+    }
+
+    private void setCommentAndCheck(final Properties properties,
+                                    final String comments,
+                                    final Properties expected) {
+        this.checkEquals(
+            expected,
+            properties.setComment(comments),
+            properties + "\ncomment=" + comments
+        );
+    }
+
+    private void commentAndCheck(final Properties properties,
+                                 final String comments) {
+        this.checkEquals(
+            comments,
+            properties.comment(),
+            properties::toString
         );
     }
 
@@ -1530,6 +1623,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     public void testToString() {
         this.toStringAndCheck(
             new Properties(
+                Properties.NO_COMMENT,
                 map(
                     PropertiesPath.parse("key.111"),
                     "*value*111",
@@ -1546,6 +1640,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     public void testToStringBell() {
         this.toStringAndCheck(
             new Properties(
+                Properties.NO_COMMENT,
                 map(
                     PropertiesPath.parse("key.111"),
                     "value\b",
@@ -1562,6 +1657,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     public void testToStringTab() {
         this.toStringAndCheck(
             new Properties(
+                Properties.NO_COMMENT,
                 map(
                     PropertiesPath.parse("key.111"),
                     "value\t",
@@ -1578,6 +1674,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     public void testToStringCr() {
         this.toStringAndCheck(
             new Properties(
+                Properties.NO_COMMENT,
                 map(
                     PropertiesPath.parse("key.111"),
                     "line1\rline2",
@@ -1597,6 +1694,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     public void testToStringCrNl() {
         this.toStringAndCheck(
             new Properties(
+                Properties.NO_COMMENT,
                 map(
                     PropertiesPath.parse("key.111"),
                     "line1\r\nline2",
@@ -1613,6 +1711,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     public void testToStringNl() {
         this.toStringAndCheck(
             new Properties(
+                Properties.NO_COMMENT,
                 map(
                     PropertiesPath.parse("key.111"),
                     "line1\nline2",
@@ -1629,12 +1728,47 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     public void testToStringSlash() {
         this.toStringAndCheck(
             new Properties(
+                Properties.NO_COMMENT,
                 map(
                     PropertiesPath.parse("hello"),
                     "\\world"
                 )
             ),
             "hello=\\\\world\r\n"
+        );
+    }
+
+    @Test
+    public void testToStringWithSingleLineComment() {
+        this.toStringAndCheck(
+            new Properties(
+                COMMENT,
+                map(
+                    PropertiesPath.parse("hello"),
+                    "\\world"
+                )
+            ),
+            "# Comment 123\r\n" +
+                "\r\n" +
+                "hello=\\\\world\r\n"
+        );
+    }
+
+    @Test
+    public void testToStringWithMultiLineComment() {
+        this.toStringAndCheck(
+            new Properties(
+                "Hello1\nHello2\nHello3\n",
+                map(
+                    PropertiesPath.parse("hello"),
+                    "\\world"
+                )
+            ),
+            "# Hello1\r\n" +
+                "# Hello2\r\n" +
+                "# Hello3\r\n" +
+                "\r\n" +
+                "hello=\\\\world\r\n"
         );
     }
 
