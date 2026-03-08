@@ -1614,6 +1614,19 @@ public final class PropertiesTest implements ClassTesting<Properties>,
         );
     }
 
+    @Test
+    public void testToStringSlash() {
+        this.toStringAndCheck(
+            new Properties(
+                map(
+                    PropertiesPath.parse("hello"),
+                    "\\world"
+                )
+            ),
+            "hello=\\world\r\n"
+        );
+    }
+
     // HasText..........................................................................................................
 
     @Test
