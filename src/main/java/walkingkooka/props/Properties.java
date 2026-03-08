@@ -40,17 +40,20 @@ import java.util.Set;
 import java.util.SortedMap;
 
 /**
- * An immutable key/value store of {@link String values}.
+ * An immutable key/value store of {@link String values} along with a optional comment.
  */
 public final class Properties implements CanBeEmpty,
     HasText,
     HasProperties,
     TreePrintable {
 
+    final static String NO_COMMENT = "";
+
     /**
      * An empty {@link Properties}.
      */
     public final static Properties EMPTY = new Properties(
+        NO_COMMENT,
         Maps.sorted()
     );
 
@@ -58,7 +61,9 @@ public final class Properties implements CanBeEmpty,
      * Package private ctor
      */
     // @VisibleForTesting
-    Properties(final SortedMap<PropertiesPath, String> pathToValue) {
+    Properties(final String comment,
+               final SortedMap<PropertiesPath, String> pathToValue) {
+        this.comment = comment;
         this.pathToValue = pathToValue;
     }
 
@@ -101,7 +106,10 @@ public final class Properties implements CanBeEmpty,
                 value
             );
 
-            setOrReplaced = new Properties(copy);
+            setOrReplaced = new Properties(
+                this.comment,
+                copy
+            );
         }
 
         return setOrReplaced;
@@ -125,7 +133,10 @@ public final class Properties implements CanBeEmpty,
                 copy.putAll(pathToValue);
                 copy.remove(path);
 
-                removed = new Properties(copy);
+                removed = new Properties(
+                    this.comment,
+                    copy
+                );
             }
         } else {
             removed = this;
@@ -194,7 +205,10 @@ public final class Properties implements CanBeEmpty,
             );
         }
 
-        return new Properties(view);
+        return new Properties(
+            NO_COMMENT,
+            view
+        );
     }
 
     /**
@@ -219,7 +233,10 @@ public final class Properties implements CanBeEmpty,
 
         return this.pathToValue.equals(copy) ?
             this :
-            new Properties(copy);
+            new Properties(
+                this.comment,
+                copy
+            );
     }
 
     // CanBeEmpty.......................................................................................................
@@ -627,6 +644,8 @@ public final class Properties implements CanBeEmpty,
 
     private static final char COMMENT_HASH = '#';
 
+    private static final String COMMENT_HASH_STRING = String.valueOf('#');
+
     private static final char CR = '\r';
 
     private static final LineEnding EOL = LineEnding.CRNL;
@@ -653,6 +672,16 @@ public final class Properties implements CanBeEmpty,
     public void printTree(final IndentingPrinter printer) {
         Objects.requireNonNull(printer, "printer");
 
+        final String comments = this.comment;
+        final boolean hasComments = false == NO_COMMENT.equals(comments);
+
+        if (hasComments) {
+            printer.println(comments);
+            printer.println();
+
+            printer.indent();
+        }
+
         for (final Entry<PropertiesPath, String> entries : this.entries()) {
             printer.lineStart();
 
@@ -669,6 +698,10 @@ public final class Properties implements CanBeEmpty,
         }
 
         printer.lineStart();
+
+        if (hasComments) {
+            printer.outdent();
+        }
     }
 
     private void printValue(final String value,
@@ -715,11 +748,31 @@ public final class Properties implements CanBeEmpty,
         }
     }
 
+    // comment..........................................................................................................
+
+    public String comment() {
+        return this.comment;
+    }
+
+    public Properties setComment(final String comment) {
+        return this.comment.equals(comment) ?
+            this :
+            new Properties(
+                Objects.requireNonNull(comment, "comment"),
+                this.pathToValue
+            );
+    }
+
+    private final String comment;
+
     // Object...........................................................................................................
 
     @Override
     public int hashCode() {
-        return this.pathToValue.hashCode();
+        return Objects.hash(
+            this.comment,
+            this.pathToValue
+        );
     }
 
     @Override
@@ -729,7 +782,8 @@ public final class Properties implements CanBeEmpty,
     }
 
     private boolean equals0(final Properties properties) {
-        return this.pathToValue.equals(properties.pathToValue);
+        return this.comment.equals(properties.comment) &&
+            this.pathToValue.equals(properties.pathToValue);
     }
 
     @Override
@@ -739,6 +793,28 @@ public final class Properties implements CanBeEmpty,
             b,
             EOL
         );
+
+        final String comment = this.comment;
+        if (false == NO_COMMENT.equals(comment)) {
+
+            final Printer commentPrinter = Printers.printedLine(
+                printer,
+                (final CharSequence line,
+                 final LineEnding eol,
+                 final Printer p) -> {
+                    p.print(COMMENT_HASH_STRING);
+                    p.print(" ");
+                    p.print(line);
+                    p.print(EOL);
+                }
+            );
+            commentPrinter.println(
+                comment.trim()
+            );
+            commentPrinter.flush();
+
+            printer.println(); // blank line after comment
+        }
 
         // print escaped value
         for (final Entry<PropertiesPath, String> entry : this.entries()) {
