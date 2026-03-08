@@ -295,6 +295,9 @@ public final class Properties implements CanBeEmpty,
 
         int mode = MODE_TOKEN;
 
+        StringBuilder comment = null;
+        int commentLineStart = 0;
+
         for (int i = 0; i < length; i++) {
             char nextChar = 0;
 
@@ -452,7 +455,7 @@ public final class Properties implements CanBeEmpty,
                         throw new IllegalStateException("Invalid char mode " + charMode);
                 }
             }
-
+            
             switch (charMode) {
                 case MODE_CHAR:
                     switch (mode) {
@@ -460,10 +463,31 @@ public final class Properties implements CanBeEmpty,
                             if (isWhitespace(nextChar)) {
                                 break;
                             }
+                            // save first comment!
+                            if (commentLineStart > 0) {
+                                if (null == comment) {
+                                    comment = new StringBuilder();
+                                }
+                                // trim and add line of comment
+                                comment.append(
+                                    CharSequences.trimLeft(
+                                        text.substring(
+                                            commentLineStart,
+                                            i
+                                        )
+                                    )
+                                );
+                                commentLineStart = i;
+                            }
                             if (isComment(nextChar)) {
                                 mode = MODE_TOKEN_COMMENT;
+
+                                if(properties.isEmpty()) {
+                                    commentLineStart = i + 1;
+                                }
                                 break;
                             }
+
                             // starting key!
                             token = new StringBuilder()
                                 .append(nextChar);
@@ -527,6 +551,18 @@ public final class Properties implements CanBeEmpty,
         switch (mode) {
             case MODE_TOKEN:
             case MODE_TOKEN_COMMENT:
+                if (commentLineStart > 0) {
+                    if (null == comment) {
+                        comment = new StringBuilder();
+                    }
+                    // trim and add line of comment
+                    comment.append(
+                        text.substring(
+                            commentLineStart,
+                            length
+                        ).trim()
+                    );
+                }
                 break;
             case MODE_TOKEN_KEY:
                 throw new IllegalArgumentException("Missing assignment following key");
@@ -543,7 +579,10 @@ public final class Properties implements CanBeEmpty,
                 throw new IllegalStateException("Invalid tokenMode " + mode);
         }
 
-        return properties;
+        return properties.setComment(
+            CharSequences.nullToEmpty(comment)
+                .toString()
+        );
     }
 
     private static int nextUnicodeDigit(final char c,

@@ -844,7 +844,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     public void testParseEsclComments() {
         this.parseStringAndCheck(
             "! 123",
-            Properties.EMPTY
+            Properties.EMPTY.setComment("123")
         );
     }
 
@@ -852,7 +852,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     public void testParseEsclCommentsCrEsclComment() {
         this.parseStringAndCheck(
             "! 111\r! 222",
-            Properties.EMPTY
+            Properties.EMPTY.setComment("111\r222")
         );
     }
 
@@ -860,7 +860,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     public void testParseEsclCommentsNlEsclComment() {
         this.parseStringAndCheck(
             "! 111\n! 222",
-            Properties.EMPTY
+            Properties.EMPTY.setComment("111\n222")
         );
     }
 
@@ -868,7 +868,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     public void testParseEsclCommentsCrNlEsclComment() {
         this.parseStringAndCheck(
             "! 111\r\n! 222",
-            Properties.EMPTY
+            Properties.EMPTY.setComment("111\r\n222")
         );
     }
 
@@ -876,7 +876,15 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     public void testParseHashComments() {
         this.parseStringAndCheck(
             "# 123",
-            Properties.EMPTY
+            Properties.EMPTY.setComment("123")
+        );
+    }
+
+    @Test
+    public void testParseHashComments2() {
+        this.parseStringAndCheck(
+            "# 111\r\n# 222\r\n",
+            Properties.EMPTY.setComment("111\r\n222")
         );
     }
 
@@ -884,7 +892,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     public void testParseHashCommentsCrHashComments() {
         this.parseStringAndCheck(
             "# 111\r# 222",
-            Properties.EMPTY
+            Properties.EMPTY.setComment("111\r222")
         );
     }
 
@@ -892,7 +900,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     public void testParseHashCommentsNlHashComments() {
         this.parseStringAndCheck(
             "# 111\n# 222",
-            Properties.EMPTY
+            Properties.EMPTY.setComment("111\n222")
         );
     }
 
@@ -900,7 +908,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     public void testParseHashCommentsCrNlHashComments() {
         this.parseStringAndCheck(
             "# 111\r\n# 222",
-            Properties.EMPTY
+            Properties.EMPTY.setComment("111\r\n222")
         );
     }
 
@@ -908,7 +916,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     public void testParseHashCommentsEmptyLine() {
         this.parseStringAndCheck(
             "# 123\n\r\n",
-            Properties.EMPTY
+            Properties.EMPTY.setComment("123")
         );
     }
 
@@ -1099,6 +1107,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
 
     @Test
     public void testParseKeyValueCommentKeyValueComment() {
+        // only initial comment should be saved!
         this.parseStringAndCheck(
             "key1=111\n! comment1\nkey2=222\n# comment 2",
             Properties.EMPTY.set(
