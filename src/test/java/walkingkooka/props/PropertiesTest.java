@@ -924,7 +924,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     public void testParseKeyMissingAssignmentFails() {
         this.parseStringFails(
             "key1",
-            new IllegalArgumentException("Missing assignment following key")
+            new IllegalArgumentException("Missing assignment '=' or ':' following key \"key1\"")
         );
     }
 
