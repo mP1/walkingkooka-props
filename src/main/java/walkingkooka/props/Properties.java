@@ -565,7 +565,17 @@ public final class Properties implements CanBeEmpty,
                 }
                 break;
             case MODE_TOKEN_KEY:
-                throw new IllegalArgumentException("Missing assignment following key");
+                throw new IllegalArgumentException(
+                    "Missing assignment " +
+                        CharSequences.quoteAndEscape(SEPARATOR_EQUALS_SIGN) +
+                        " or " +
+                        CharSequences.quoteAndEscape(SEPARATOR_COLON) +
+                        " following key " +
+                        CharSequences.quoteAndEscape(
+                            token.toString()
+                                .trim()
+                        )
+                    );
             case MODE_TOKEN_VALUE:
                 properties = properties.set(
                     key,
