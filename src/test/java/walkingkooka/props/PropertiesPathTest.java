@@ -44,7 +44,7 @@ final public class PropertiesPathTest implements PathTesting<PropertiesPath, Pro
     public void testParseFlat() {
         final String value = "xyz";
         final PropertiesPath path = PropertiesPath.parse(value);
-        this.valueCheck(path, value);
+        this.valueAndCheck(path, value);
         this.rootCheck(path);
         this.nameCheck(path, PropertiesName.with(value));
     }
@@ -53,7 +53,7 @@ final public class PropertiesPathTest implements PathTesting<PropertiesPath, Pro
     public void testParseHierarchical() {
         final String value = "ab.cd";
         final PropertiesPath path = PropertiesPath.parse(value);
-        this.valueCheck(path, value);
+        this.valueAndCheck(path, value);
         this.rootNotCheck(path);
         this.nameCheck(path, PropertiesName.with("cd"));
         this.parentCheck(path, "ab");
@@ -91,7 +91,7 @@ final public class PropertiesPathTest implements PathTesting<PropertiesPath, Pro
             path,
             PropertiesName.with("four")
         );
-        this.valueCheck(
+        this.valueAndCheck(
             path,
             "one.two.three.four"
         );
@@ -111,7 +111,7 @@ final public class PropertiesPathTest implements PathTesting<PropertiesPath, Pro
             path,
             PropertiesName.with("five")
         );
-        this.valueCheck(
+        this.valueAndCheck(
             path,
             "one.two.three.four.five"
         );
