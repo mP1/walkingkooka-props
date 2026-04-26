@@ -44,7 +44,7 @@ public final class MissingPropertyExceptionTest implements ThrowableTesting2<Mis
         final PropertiesPath propertiesPath = PropertiesPath.parse("hello.world");
         final MissingPropertyException missingPropertyException = new MissingPropertyException(propertiesPath);
 
-        this.checkMessage(
+        this.getMessageAndCheck(
             missingPropertyException,
             "Missing property \"hello.world\""
         );
