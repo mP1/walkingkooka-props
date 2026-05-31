@@ -21,13 +21,14 @@ package walkingkooka.props;
 import walkingkooka.Cast;
 import walkingkooka.InvalidCharacterException;
 import walkingkooka.naming.Name;
+import walkingkooka.naming.PathName;
 import walkingkooka.text.CaseSensitivity;
 import walkingkooka.text.CharSequences;
 
 /**
  * A simple {@link Name} that accepts a {@link String} composed of any character.
  */
-final public class PropertiesName implements Name,
+final public class PropertiesName implements PathName,
     Comparable<PropertiesName> {
 
     /**
