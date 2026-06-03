@@ -30,6 +30,7 @@ import walkingkooka.text.printer.Printer;
 import walkingkooka.text.printer.Printers;
 import walkingkooka.text.printer.TreePrintable;
 
+import java.awt.PageAttributes.MediaType;
 import java.io.Reader;
 import java.util.Collection;
 import java.util.Collections;
@@ -48,6 +49,12 @@ public final class Properties implements CanBeEmpty,
     TreePrintable {
 
     final static String NO_COMMENT = "";
+
+    /**
+     * A {@link String} content-type. Unable to use {@link MediaType} because that would cause a cyclic dependency.
+     */
+    // https://stackoverflow.com/questions/6248130/what-is-the-mime-type-for-properties-files
+    public final static String CONTENT_TYPE = "text/x-java-properties";
 
     /**
      * An empty {@link Properties}.
