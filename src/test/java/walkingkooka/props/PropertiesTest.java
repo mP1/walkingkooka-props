@@ -30,6 +30,8 @@ import walkingkooka.text.CharSequences;
 import walkingkooka.text.HasTextTesting;
 import walkingkooka.text.Indentation;
 import walkingkooka.text.LineEnding;
+import walkingkooka.text.TextContext;
+import walkingkooka.text.TextPrinting;
 import walkingkooka.text.printer.TreePrintableTesting;
 
 import java.io.BufferedReader;
@@ -58,6 +60,11 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     ParseStringTesting<Properties> {
 
     private final String COMMENT = "Comment 123";
+
+    private final static TextContext TEXT_CONTEXT = TextPrinting.with(
+        Indentation.SPACES2,
+        LineEnding.NL
+    );
 
     // get..............................................................................................................
 
@@ -1558,10 +1565,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
                 value
             );
 
-        final String text = properties.treeToString(
-            Indentation.SPACES2,
-            LineEnding.NL
-        );
+        final String text = properties.treeToString(TEXT_CONTEXT);
 
         this.checkEquals(
             properties,
@@ -1588,10 +1592,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
                 value
             );
 
-        final String text = properties.treeToString(
-            Indentation.SPACES2,
-            LineEnding.NL
-        );
+        final String text = properties.treeToString(TEXT_CONTEXT);
 
         this.checkEquals(
             properties,
