@@ -33,7 +33,7 @@ public interface HasPropertiesPathTesting extends Testing {
                                         final PropertiesPath propertiesPath) {
         this.checkEquals(
             propertiesPath,
-            has.propertiesPath(),
+            has.path(),
             has::toString
         );
     }
