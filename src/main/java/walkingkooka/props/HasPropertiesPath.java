@@ -17,10 +17,10 @@
 
 package walkingkooka.props;
 
+import walkingkooka.naming.HasPath;
+
 /**
  * Contains a getter to get a {@link PropertiesPath}.
  */
-public interface HasPropertiesPath {
-
-    PropertiesPath propertiesPath();
+public interface HasPropertiesPath extends HasPath<PropertiesPath> {
 }
