@@ -17,24 +17,15 @@
 
 package walkingkooka.props;
 
-import walkingkooka.test.Testing;
+import walkingkooka.naming.HasPathTesting;
 
-public interface HasPropertiesPathTesting extends Testing {
+public interface HasPropertiesPathTesting extends HasPathTesting {
 
-    default void propertiesPathAndCheck(final HasPropertiesPath has,
-                                        final String expected) {
-        this.propertiesPathAndCheck(
+    default void pathAndCheck(final HasPropertiesPath has,
+                              final String expected) {
+        this.pathAndCheck(
             has,
             PropertiesPath.parse(expected)
-        );
-    }
-
-    default void propertiesPathAndCheck(final HasPropertiesPath has,
-                                        final PropertiesPath propertiesPath) {
-        this.checkEquals(
-            propertiesPath,
-            has.path(),
-            has::toString
         );
     }
 }
