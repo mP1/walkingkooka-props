@@ -88,7 +88,7 @@ final public class PropertiesPathTest implements PathTesting<PropertiesPath, Pro
     }
 
     @Test
-    public void testAppendName() {
+    public void testAppendName2() {
         final PropertiesPath path = PropertiesPath.parse("one.two.three")
             .append(
                 PropertiesName.with("four")
