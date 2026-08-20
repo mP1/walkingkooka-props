@@ -35,30 +35,6 @@ final public class PropertiesPathTest implements PathTesting<PropertiesPath, Pro
     ClassTesting2<PropertiesPath>,
     ParseStringTesting<PropertiesPath> {
 
-    @Test
-    public void testParseEmptyComponent() {
-        this.parseStringFails("before..after", IllegalArgumentException.class);
-    }
-
-    @Test
-    public void testParseFlat() {
-        final String value = "xyz";
-        final PropertiesPath path = PropertiesPath.parse(value);
-        this.valueAndCheck(path, value);
-        this.rootCheck(path);
-        this.nameCheck(path, PropertiesName.with(value));
-    }
-
-    @Test
-    public void testParseHierarchical() {
-        final String value = "ab.cd";
-        final PropertiesPath path = PropertiesPath.parse(value);
-        this.valueAndCheck(path, value);
-        this.rootNotCheck(path);
-        this.nameCheck(path, PropertiesName.with("cd"));
-        this.parentCheck(path, "ab");
-    }
-
     @Override
     public void testAppendNameToRoot() {
         // nop
@@ -190,6 +166,30 @@ final public class PropertiesPathTest implements PathTesting<PropertiesPath, Pro
     }
 
     // ParseStringTesting ..............................................................................................
+
+    @Test
+    public void testParseEmptyComponent() {
+        this.parseStringFails("before..after", IllegalArgumentException.class);
+    }
+
+    @Test
+    public void testParseFlat() {
+        final String value = "xyz";
+        final PropertiesPath path = PropertiesPath.parse(value);
+        this.valueAndCheck(path, value);
+        this.rootCheck(path);
+        this.nameCheck(path, PropertiesName.with(value));
+    }
+
+    @Test
+    public void testParseHierarchical() {
+        final String value = "ab.cd";
+        final PropertiesPath path = PropertiesPath.parse(value);
+        this.valueAndCheck(path, value);
+        this.rootNotCheck(path);
+        this.nameCheck(path, PropertiesName.with("cd"));
+        this.parentCheck(path, "ab");
+    }
 
     @Override
     public PropertiesPath parseString(final String text) {
