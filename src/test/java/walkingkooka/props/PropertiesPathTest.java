@@ -76,7 +76,10 @@ final public class PropertiesPathTest implements PathTesting<PropertiesPath, Pro
 
         assertFalse(parent.isRoot());
         assertSame(parent, path.parent().get());
-        this.checkEquals(PropertiesName.with("two"), parent.name());
+        this.nameCheck(
+            parent,
+            PropertiesName.with("two")
+        );
 
         final PropertiesPath grandParent = parent.parent().get();
         this.valueAndCheck(
@@ -84,7 +87,10 @@ final public class PropertiesPathTest implements PathTesting<PropertiesPath, Pro
             "one"
         );
         assertTrue(grandParent.isRoot());
-        this.checkEquals(PropertiesName.with("one"), grandParent.name());
+        this.nameCheck(
+            grandParent,
+            PropertiesName.with("one")
+        );
     }
 
     @Test
