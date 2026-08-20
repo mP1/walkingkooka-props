@@ -21,18 +21,18 @@ import walkingkooka.test.Testing;
 
 public interface HasPropertiesPathTesting extends Testing {
 
-    default void propertiesAndCheck(final HasPropertiesPath has,
-                                    final String expected) {
-        this.propertiesAndCheck(
+    default void propertiesPathAndCheck(final HasPropertiesPath has,
+                                        final String expected) {
+        this.propertiesPathAndCheck(
             has,
-            Properties.parse(expected)
+            PropertiesPath.parse(expected)
         );
     }
 
-    default void propertiesAndCheck(final HasPropertiesPath has,
-                                    final Properties properties) {
+    default void propertiesPathAndCheck(final HasPropertiesPath has,
+                                        final PropertiesPath propertiesPath) {
         this.checkEquals(
-            properties,
+            propertiesPath,
             has.propertiesPath(),
             has::toString
         );
