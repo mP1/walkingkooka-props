@@ -401,25 +401,23 @@ public final class Properties implements CanBeEmpty,
                         switch (c) {
                             case NL: // BACKSLASH CR NL
                                 nextChar = c;
-                                charMode = MODE_CHAR;
                                 break;
                             default:
                                 nextChar = c;
-                                charMode = MODE_CHAR;
                                 break;
                         }
+                        charMode = MODE_CHAR;
                         break;
                     case MODE_CHAR_BACKSPACE_ESCAPING_NL:
                         switch (c) {
-                            case CR: // BACKSLASH CR NL
+                            case CR: // BACKSLASH CR
                                 nextChar = CR;
-                                charMode = MODE_CHAR;
                                 break;
                             default:
                                 nextChar = c;
-                                charMode = MODE_CHAR;
                                 break;
                         }
+                        charMode = MODE_CHAR;
                         break;
                     case MODE_CHAR_UNICODE_0:
                         unicodeChar = nextUnicodeDigit(
