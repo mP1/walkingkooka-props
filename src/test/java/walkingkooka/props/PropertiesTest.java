@@ -1842,8 +1842,8 @@ public final class PropertiesTest implements ClassTesting<Properties>,
                 PropertiesPath.parse("2nd"),
                 "222"
             ),
-                "2nd=222\r\n" +
-                    "hello=world\r\n"
+            "2nd=222\r\n" +
+                "hello=world\r\n"
         );
     }
 
