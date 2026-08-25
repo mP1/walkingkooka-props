@@ -272,25 +272,7 @@ public final class Properties implements CanBeEmpty,
      * spaces in a value the first for the line must be escaped.
      */
     public static Properties parse(final String text) {
-        final PropertiesPropertiesFileVisitor visitor = PropertiesPropertiesFileVisitor.empty();
-
-        readFile(
-            text,
-            visitor
-        );
-
-        return visitor.properties;
-    }
-
-    /**
-     * Parses the text file calling the given {@link PropertiesFileVisitor} for each of the tokens encountered.
-     */
-    public static void readFile(final String text,
-                                final PropertiesFileVisitor visitor) {
         Objects.requireNonNull(text, "text");
-        Objects.requireNonNull(visitor, "visitor");
-
-        visitor.visitStart();
 
         final int length = text.length();
 
@@ -306,8 +288,9 @@ public final class Properties implements CanBeEmpty,
         int unicodeChar = 0;
         int mode = MODE_CHAR;
 
-        boolean empty = true;
-        String key = null;
+        Properties properties = EMPTY;
+
+        PropertiesPath key = null;
         String value = null;
 
         StringBuilder token = null;
@@ -341,14 +324,14 @@ public final class Properties implements CanBeEmpty,
                                             i
                                         );
                                     }
-
-                                    visitor.visitValue(
+                                    properties = properties.set(
+                                        key,
                                         concat(
                                             value,
                                             token
                                         )
                                     );
-                                    empty = false;
+
                                     key = null;
                                     value = null;
                                     tokenMode = MODE_TOKEN;
@@ -397,7 +380,6 @@ public final class Properties implements CanBeEmpty,
                                     value,
                                     token
                                 );
-
                                 token = new StringBuilder();
                                 mode = MODE_CHAR_BACKSPACE_ESCAPING_CR;
                                 break;
@@ -406,7 +388,6 @@ public final class Properties implements CanBeEmpty,
                                     value,
                                     token
                                 );
-
                                 token = new StringBuilder();
                                 mode = MODE_CHAR_BACKSPACE_ESCAPING_NL;
                                 break;
@@ -508,7 +489,7 @@ public final class Properties implements CanBeEmpty,
                             if (isComment(nextChar)) {
                                 tokenMode = MODE_TOKEN_COMMENT;
 
-                                if (empty) {
+                                if (properties.isEmpty()) {
                                     commentLineStart = i + 1;
                                 }
                                 break;
@@ -534,15 +515,10 @@ public final class Properties implements CanBeEmpty,
                             switch (nextChar) {
                                 case SEPARATOR_EQUALS_SIGN:
                                 case SEPARATOR_COLON:
-                                    key = token.toString()
-                                        .trim();
-                                    visitor.visitKey(key);
-
+                                    key = PropertiesPath.parse(token.toString().trim());
                                     token = new StringBuilder();
                                     value = "";
                                     tokenMode = MODE_TOKEN_VALUE;
-
-                                    empty = false;
                                     break;
                                 case NL:
                                 case CR:
@@ -564,7 +540,6 @@ public final class Properties implements CanBeEmpty,
                                         value,
                                         token
                                     );
-
                                     token = new StringBuilder();
                                 default:
                                     token.append(nextChar);
@@ -609,24 +584,22 @@ public final class Properties implements CanBeEmpty,
                         )
                 );
             case MODE_TOKEN_VALUE:
-                value = concat(
-                    value,
-                    token
+                properties = properties.set(
+                    key,
+                    concat(
+                        value,
+                        token
+                    )
                 );
-                visitor.visitValue(value);
-                empty = false;
-
                 break;
             default:
                 throw new IllegalStateException("Invalid tokenMode " + tokenMode);
         }
 
-        visitor.visitComment(
+        return properties.setComment(
             CharSequences.nullToEmpty(comment)
                 .toString()
         );
-
-        visitor.visitEnd();
     }
 
     private static int nextUnicodeDigit(final char c,
