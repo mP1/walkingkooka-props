@@ -163,7 +163,7 @@ final public class PropertiesPath implements Path<PropertiesPath, PropertiesName
             path.substring(
                 0,
                 last
-            )+ (char)(path.charAt(last) + 1),
+            ) + (char) (path.charAt(last) + 1),
             null, // name
             NO_PARENT
         );

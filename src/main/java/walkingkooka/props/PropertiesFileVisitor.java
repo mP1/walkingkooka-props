@@ -56,7 +56,7 @@ public class PropertiesFileVisitor extends Visitor<Properties> {
 
         this.visitComment(properties.comment());
 
-        for(final Entry<PropertiesPath, String> keyAndValue : properties.entries()) {
+        for (final Entry<PropertiesPath, String> keyAndValue : properties.entries()) {
             this.visitKey(
                 keyAndValue.getKey()
                     .value()

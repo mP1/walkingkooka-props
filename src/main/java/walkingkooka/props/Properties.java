@@ -941,19 +941,19 @@ public final class Properties implements CanBeEmpty,
                         if (c < ' ' || c > 0x80) {
                             print = "\\u"
                                 .concat(
-                                CharSequences.padLeft(
-                                    Integer.toHexString((c)),
-                                    4,
-                                    '0'
-                                ).toString()
-                            );
+                                    CharSequences.padLeft(
+                                        Integer.toHexString((c)),
+                                        4,
+                                        '0'
+                                    ).toString()
+                                );
                         } else {
                             print = String.valueOf(c);
                         }
                         break;
                 }
 
-                if(null != print) {
+                if (null != print) {
                     if (null != lineEnding) {
                         printer.print(BACKSLASH_STRING);
                         printer.print(lineEnding);
