@@ -41,7 +41,6 @@ final class PropertiesPropertiesFileVisitor extends PropertiesFileVisitor {
 
     @Override
     protected void visitKey(final String key) {
-        System.out.println("visitKey: " + key);
         this.key = PropertiesPath.parse(key);
     }
 
@@ -49,7 +48,6 @@ final class PropertiesPropertiesFileVisitor extends PropertiesFileVisitor {
 
     @Override
     protected void visitValue(final String value) {
-        System.out.println("visitValue: " + value);
         this.properties = this.properties.set(
             this.key,
             value
