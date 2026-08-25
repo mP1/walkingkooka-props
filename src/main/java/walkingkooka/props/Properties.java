@@ -286,7 +286,7 @@ public final class Properties implements CanBeEmpty,
         final int MODE_CHAR_UNICODE_3 = 8;
 
         int unicodeChar = 0;
-        int charMode = MODE_CHAR;
+        int mode = MODE_CHAR;
 
         Properties properties = EMPTY;
 
@@ -311,7 +311,7 @@ public final class Properties implements CanBeEmpty,
             {
                 final char c = text.charAt(i);
 
-                switch (charMode) {
+                switch (mode) {
                     case MODE_CHAR:
                         switch (c) {
                             case NL:
@@ -339,7 +339,7 @@ public final class Properties implements CanBeEmpty,
                                 nextChar = c;
                                 break;
                             case BACKSLASH:
-                                charMode = MODE_CHAR_BACKSPACE_ESCAPING;
+                                mode = MODE_CHAR_BACKSPACE_ESCAPING;
                                 break;
                             default:
                                 nextChar = c;
@@ -350,29 +350,29 @@ public final class Properties implements CanBeEmpty,
                         switch (c) {
                             case 'b':
                                 nextChar = BELL;
-                                charMode = MODE_CHAR;
+                                mode = MODE_CHAR;
                                 break;
                             case 'f':
                                 nextChar = FORMFEED;
-                                charMode = MODE_CHAR;
+                                mode = MODE_CHAR;
                                 break;
                             case 'n':
                                 nextChar = NL;
-                                charMode = MODE_CHAR;
+                                mode = MODE_CHAR;
                                 break;
                             case 'r':
                                 nextChar = CR;
-                                charMode = MODE_CHAR;
+                                mode = MODE_CHAR;
                                 break;
                             case 't':
                                 nextChar = TAB;
-                                charMode = MODE_CHAR;
+                                mode = MODE_CHAR;
                                 break;
                             case 'u':
-                                charMode = MODE_CHAR_UNICODE_0;
+                                mode = MODE_CHAR_UNICODE_0;
                                 break;
                             case BACKSLASH:
-                                charMode = MODE_CHAR;
+                                mode = MODE_CHAR;
                                 nextChar = c;
                                 break;
                             case CR:
@@ -381,7 +381,7 @@ public final class Properties implements CanBeEmpty,
                                     token
                                 );
                                 token = new StringBuilder();
-                                charMode = MODE_CHAR_BACKSPACE_ESCAPING_CR;
+                                mode = MODE_CHAR_BACKSPACE_ESCAPING_CR;
                                 break;
                             case NL:
                                 value = concat(
@@ -389,11 +389,11 @@ public final class Properties implements CanBeEmpty,
                                     token
                                 );
                                 token = new StringBuilder();
-                                charMode = MODE_CHAR_BACKSPACE_ESCAPING_NL;
+                                mode = MODE_CHAR_BACKSPACE_ESCAPING_NL;
                                 break;
                             default:
                                 nextChar = c;
-                                charMode = MODE_CHAR;
+                                mode = MODE_CHAR;
                                 break;
                         }
                         break;
@@ -401,11 +401,11 @@ public final class Properties implements CanBeEmpty,
                         switch (c) {
                             case NL: // BACKSLASH CR NL
                                 nextChar = c;
-                                charMode = MODE_CHAR;
+                                mode = MODE_CHAR;
                                 break;
                             default:
                                 nextChar = c;
-                                charMode = MODE_CHAR;
+                                mode = MODE_CHAR;
                                 break;
                         }
                         break;
@@ -413,11 +413,11 @@ public final class Properties implements CanBeEmpty,
                         switch (c) {
                             case CR: // BACKSLASH CR NL
                                 nextChar = CR;
-                                charMode = MODE_CHAR;
+                                mode = MODE_CHAR;
                                 break;
                             default:
                                 nextChar = c;
-                                charMode = MODE_CHAR;
+                                mode = MODE_CHAR;
                                 break;
                         }
                         break;
@@ -428,7 +428,7 @@ public final class Properties implements CanBeEmpty,
                             text,
                             unicodeChar
                         );
-                        charMode = MODE_CHAR_UNICODE_1;
+                        mode = MODE_CHAR_UNICODE_1;
                         break;
                     case MODE_CHAR_UNICODE_1:
                         unicodeChar = nextUnicodeDigit(
@@ -437,7 +437,7 @@ public final class Properties implements CanBeEmpty,
                             text,
                             unicodeChar
                         );
-                        charMode = MODE_CHAR_UNICODE_2;
+                        mode = MODE_CHAR_UNICODE_2;
                         break;
                     case MODE_CHAR_UNICODE_2:
                         unicodeChar = nextUnicodeDigit(
@@ -446,7 +446,7 @@ public final class Properties implements CanBeEmpty,
                             text,
                             unicodeChar
                         );
-                        charMode = MODE_CHAR_UNICODE_3;
+                        mode = MODE_CHAR_UNICODE_3;
                         break;
                     case MODE_CHAR_UNICODE_3:
                         nextChar = (char) nextUnicodeDigit(
@@ -455,15 +455,15 @@ public final class Properties implements CanBeEmpty,
                             text,
                             unicodeChar
                         );
-                        charMode = MODE_CHAR;
+                        mode = MODE_CHAR;
                         unicodeChar = 0;
                         break;
                     default:
-                        throw new IllegalStateException("Invalid char mode " + charMode);
+                        throw new IllegalStateException("Invalid char mode " + mode);
                 }
             }
             
-            switch (charMode) {
+            switch (mode) {
                 case MODE_CHAR:
                     switch (tokenMode) {
                         case MODE_TOKEN:
