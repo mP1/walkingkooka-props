@@ -1643,7 +1643,6 @@ public final class PropertiesTest implements ClassTesting<Properties>,
         stringWriter.close();
 
         final String written = stringWriter.toString();
-        System.out.println(written);
 
         final java.util.Properties loaded = new java.util.Properties();
         loaded.load(new StringReader(written));
