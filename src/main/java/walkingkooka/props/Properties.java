@@ -23,8 +23,11 @@ import walkingkooka.collect.map.Maps;
 import walkingkooka.collect.set.Sets;
 import walkingkooka.text.CharSequences;
 import walkingkooka.text.CharacterConstant;
+import walkingkooka.text.HasMultiLineText;
 import walkingkooka.text.HasText;
 import walkingkooka.text.LineEnding;
+import walkingkooka.text.MultiLineText;
+import walkingkooka.text.TextContext;
 import walkingkooka.text.printer.IndentingPrinter;
 import walkingkooka.text.printer.Printer;
 import walkingkooka.text.printer.Printers;
@@ -44,6 +47,7 @@ import java.util.SortedMap;
  * An immutable key/value store of {@link String values} along with a optional comment.
  */
 public final class Properties implements CanBeEmpty,
+    HasMultiLineText,
     HasText,
     HasProperties,
     TreePrintable {
@@ -842,10 +846,27 @@ public final class Properties implements CanBeEmpty,
 
     @Override
     public String toString() {
+        return this.textWithLineBreaks(EOL);
+    }
+
+    // HasText..........................................................................................................
+
+    @Override
+    public MultiLineText multiLineText(final TextContext context) {
+        Objects.requireNonNull(context, "textContext");
+
+        return MultiLineText.with(
+            this.textWithLineBreaks(
+                context.lineEnding()
+            )
+        );
+    }
+
+    private String textWithLineBreaks(final LineEnding lineEnding) {
         final StringBuilder b = new StringBuilder();
         final Printer printer = Printers.stringBuilder(
             b,
-            EOL
+            lineEnding
         );
 
         final String comment = this.comment;
@@ -859,7 +880,7 @@ public final class Properties implements CanBeEmpty,
                     p.print(COMMENT_HASH_STRING);
                     p.print(" ");
                     p.print(line);
-                    p.print(EOL);
+                    p.print(eol);
                 }
             );
             commentPrinter.println(
@@ -878,7 +899,7 @@ public final class Properties implements CanBeEmpty,
             final String value = entry.getValue();
             final int length = value.length();
 
-            LineEnding lineEnding = null;
+            LineEnding lastLineEnding = null;
 
             for (int i = 0; i < length; i++) {
                 final char c = value.charAt(i);
@@ -897,13 +918,13 @@ public final class Properties implements CanBeEmpty,
                         break;
                     case NL:
                         print = null;
-                        lineEnding = LineEnding.CR == lineEnding ?
+                        lastLineEnding = LineEnding.CR == lastLineEnding ?
                             LineEnding.CRNL :
                             LineEnding.NL;
                         break;
                     case CR:
                         print = null;
-                        lineEnding = LineEnding.CR;
+                        lastLineEnding = LineEnding.CR;
                         break;
                     case BACKSLASH:
                         print = "\\" + BACKSLASH_STRING; // escaped backslash
@@ -925,18 +946,18 @@ public final class Properties implements CanBeEmpty,
                 }
 
                 if (null != print) {
-                    if (null != lineEnding) {
+                    if (null != lastLineEnding) {
                         printer.print(BACKSLASH_STRING);
-                        printer.print(lineEnding);
-                        lineEnding = null;
+                        printer.print(lastLineEnding);
+                        lastLineEnding = null;
                     }
                     printer.print(print);
                 }
             }
 
-            if (null != lineEnding) {
+            if (null != lastLineEnding) {
                 printer.print(BACKSLASH_STRING);
-                printer.print(lineEnding);
+                printer.print(lastLineEnding);
             }
             printer.println();
         }
