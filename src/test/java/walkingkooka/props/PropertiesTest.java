@@ -27,6 +27,7 @@ import walkingkooka.reflect.ClassTesting;
 import walkingkooka.reflect.JavaVisibility;
 import walkingkooka.test.ParseStringTesting;
 import walkingkooka.text.CharSequences;
+import walkingkooka.text.HasMultiLineTextTesting;
 import walkingkooka.text.HasTextTesting;
 import walkingkooka.text.Indentation;
 import walkingkooka.text.LineEnding;
@@ -52,6 +53,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class PropertiesTest implements ClassTesting<Properties>,
     HashCodeEqualsDefinedTesting2<Properties>,
+    HasMultiLineTextTesting,
     HasTextTesting,
     HasPropertiesTesting,
     ToStringTesting<Properties>,
@@ -1821,8 +1823,8 @@ public final class PropertiesTest implements ClassTesting<Properties>,
                     "\\world"
                 )
             ),
-            "# Hello1\r\n" +
-                "# Hello2\r\n" +
+            "# Hello1\n" +
+                "# Hello2\n" +
                 "# Hello3\r\n" +
                 "\r\n" +
                 "hello=\\\\world\r\n"
@@ -1886,6 +1888,36 @@ public final class PropertiesTest implements ClassTesting<Properties>,
             ),
             "hello=world\r\n" +
                 "2nd=222\r\n"
+        );
+    }
+
+    // HasMultiLineValue................................................................................................
+
+    @Test
+    public void testMultiLineTextWithCr() {
+        this.multiLineTextAndCheck(
+            Properties.EMPTY.set(
+                PropertiesPath.parse("hello"),
+                "world"
+            ).setComment("Comment123"),
+            LineEnding.CR,
+            "# Comment123\r" +
+                "\r" +
+                "hello=world\r"
+        );
+    }
+
+    @Test
+    public void testMultiLineTextWithNl() {
+        this.multiLineTextAndCheck(
+            Properties.EMPTY.set(
+                PropertiesPath.parse("hello"),
+                "world"
+            ).setComment("Comment123"),
+            LineEnding.NL,
+            "# Comment123\n" +
+                "\n" +
+                "hello=world\n"
         );
     }
 
