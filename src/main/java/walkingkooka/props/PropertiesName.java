@@ -39,7 +39,7 @@ final public class PropertiesName implements PathName,
     /**
      * Factory that creates a {@link PropertiesName}, only the root path has this name.
      */
-    static PropertiesName with(final String name) {
+    public static PropertiesName with(final String name) {
         CharSequences.failIfNullOrEmpty(name, "name");
 
         final int separator = name.indexOf(PropertiesPath.SEPARATOR.character());
