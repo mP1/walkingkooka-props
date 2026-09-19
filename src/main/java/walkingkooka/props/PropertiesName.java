@@ -37,7 +37,7 @@ final public class PropertiesName implements PathName,
     final static PropertiesName ROOT = new PropertiesName("");
 
     /**
-     * Factory that creates a {@link PropertiesName}, only the root path has this name.
+     * Factory that creates a {@link PropertiesName}.
      */
     public static PropertiesName with(final String name) {
         CharSequences.failIfNullOrEmpty(name, "name");
