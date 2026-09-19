@@ -100,5 +100,5 @@ final public class PropertiesName implements PathName,
         return CASE_SENSITIVITY;
     }
 
-    private final static CaseSensitivity CASE_SENSITIVITY = CaseSensitivity.SENSITIVE;
+    public final static CaseSensitivity CASE_SENSITIVITY = CaseSensitivity.SENSITIVE;
 }
