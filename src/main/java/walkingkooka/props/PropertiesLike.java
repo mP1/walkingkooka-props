@@ -41,7 +41,7 @@ public interface PropertiesLike<T> extends CanBeEmpty,
             .orElseThrow(() -> new MissingPropertyException(path));
     }
 
-    Optional<String> getOrTryAncestors(final PropertiesPath path);
+    Optional<T> getOrTryAncestors(final PropertiesPath path);
 
     /**
      * Sets or replaces the string value for the given {@link PropertiesPath}, returning a {@link Properties} with the
