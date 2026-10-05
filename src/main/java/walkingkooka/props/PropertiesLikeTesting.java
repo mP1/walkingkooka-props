@@ -19,6 +19,7 @@ package walkingkooka.props;
 
 import walkingkooka.CanBeEmptyTesting;
 import walkingkooka.collect.set.Sets;
+import walkingkooka.text.HasMultiLineTextTesting;
 import walkingkooka.text.HasTextTesting;
 import walkingkooka.text.printer.TreePrintableTesting;
 
@@ -26,6 +27,8 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface PropertiesLikeTesting extends CanBeEmptyTesting,
+    HasMultiLineTextTesting,
+    HasPropertiesTesting,
     HasTextTesting,
     TreePrintableTesting {
 
