@@ -724,7 +724,7 @@ public final class Properties implements PropertiesLike<String>,
 
     private static final char CR = '\r';
 
-    private static final LineEnding EOL = LineEnding.CRNL;
+    public static final LineEnding EOL = LineEnding.CRNL;
 
     private static final char FORMFEED = '\f';
 
