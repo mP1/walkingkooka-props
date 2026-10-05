@@ -57,6 +57,34 @@ public interface PropertiesLikeTesting extends CanBeEmptyTesting,
         );
     }
 
+    default <T> void getOrTryAncestorsAndCheck(final PropertiesLike<T> properties,
+                                               final PropertiesPath path) {
+        this.getOrTryAncestorsAndCheck(
+            properties,
+            path,
+            Optional.empty()
+        );
+    }
+
+    default <T> void getOrTryAncestorsAndCheck(final PropertiesLike<T> properties,
+                                               final PropertiesPath path,
+                                               final T expected) {
+        this.getOrTryAncestorsAndCheck(
+            properties,
+            path,
+            Optional.of(expected)
+        );
+    }
+
+    default <T> void getOrTryAncestorsAndCheck(final PropertiesLike<T> properties,
+                                               final PropertiesPath path,
+                                               final Optional<T> expected) {
+        this.checkEquals(
+            expected,
+            properties.getOrTryAncestors(path)
+        );
+    }
+
     default void keysAndCheck(final PropertiesLike<?> properties,
                               final PropertiesPath... expected) {
         this.keysAndCheck(

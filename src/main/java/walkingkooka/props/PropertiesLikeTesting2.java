@@ -35,6 +35,15 @@ public interface PropertiesLikeTesting2<P extends PropertiesLike<V>, V> extends 
     }
 
     @Test
+    default void testGetOrTryAncestorsWithNullFails() {
+        assertThrows(
+            NullPointerException.class,
+            () -> this.createPropertiesLike()
+                .getOrTryAncestors(null)
+        );
+    }
+
+    @Test
     default void testSetWithNullPathFails() {
         assertThrows(
             NullPointerException.class,

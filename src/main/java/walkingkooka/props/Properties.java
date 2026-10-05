@@ -87,6 +87,25 @@ public final class Properties implements PropertiesLike<String>,
         );
     }
 
+    @Override
+    public Optional<String> getOrTryAncestors(final PropertiesPath path) {
+        Objects.requireNonNull(path, "path");
+
+        String value = null;
+
+        PropertiesPath p = path;
+        while (null != p) {
+            value = this.pathToValue.get(p);
+            if (null != value) {
+                break;
+            }
+            p = p.parent()
+                .orElse(null);
+        }
+
+        return Optional.ofNullable(value);
+    }
+
     /**
      * Sets or replaces the string value for the given {@link PropertiesPath}, returning a {@link Properties} with the
      * change leaving the original unchanged
