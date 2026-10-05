@@ -54,7 +54,7 @@ public interface PropertiesLike<T> extends CanBeEmpty,
      * Removes the string value if one exists, for the given {@link PropertiesPath}, returning a {@link Properties} with the
      * change leaving the original unchanged
      */
-    Properties remove(final PropertiesPath path);
+    PropertiesLike<T> remove(final PropertiesPath path);
 
     /**
      * Read-only view of the entries in this properties object.
