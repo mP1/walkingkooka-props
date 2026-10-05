@@ -18,7 +18,6 @@
 package walkingkooka.props;
 
 import org.junit.jupiter.api.Test;
-import walkingkooka.CanBeEmptyTesting;
 import walkingkooka.HashCodeEqualsDefinedTesting2;
 import walkingkooka.ToStringTesting;
 import walkingkooka.collect.map.Maps;
@@ -28,21 +27,16 @@ import walkingkooka.reflect.JavaVisibility;
 import walkingkooka.test.ParseStringTesting;
 import walkingkooka.text.CharSequences;
 import walkingkooka.text.HasMultiLineTextTesting;
-import walkingkooka.text.HasTextTesting;
 import walkingkooka.text.Indentation;
 import walkingkooka.text.LineEnding;
 import walkingkooka.text.TextContext;
 import walkingkooka.text.TextPrinting;
-import walkingkooka.text.printer.TreePrintableTesting;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -51,14 +45,13 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class PropertiesTest implements ClassTesting<Properties>,
+public final class PropertiesTest implements PropertiesLikeTesting2<Properties, String>,
+    ClassTesting<Properties>,
     HashCodeEqualsDefinedTesting2<Properties>,
     HasMultiLineTextTesting,
-    HasTextTesting,
     HasPropertiesTesting,
+    PropertiesLikeTesting,
     ToStringTesting<Properties>,
-    CanBeEmptyTesting,
-    TreePrintableTesting,
     ParseStringTesting<Properties> {
 
     private final String COMMENT = "Comment 123";
@@ -69,14 +62,6 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     );
 
     // get..............................................................................................................
-
-    @Test
-    public void testGetNullFails() {
-        assertThrows(
-            NullPointerException.class,
-            () -> Properties.EMPTY.get(null)
-        );
-    }
 
     @Test
     public void testGet() {
@@ -92,7 +77,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
                 )
             ),
             key,
-            Optional.of(value)
+            value
         );
     }
 
@@ -106,18 +91,7 @@ public final class PropertiesTest implements ClassTesting<Properties>,
                     "value1"
                 )
             ),
-            PropertiesPath.parse("unknown.key.404"),
-            Optional.empty()
-        );
-    }
-
-    private void getAndCheck(final Properties properties,
-                             final PropertiesPath key,
-                             final Optional<String> value) {
-        this.checkEquals(
-            value,
-            properties.get(key),
-            () -> properties + " " + key
+            PropertiesPath.parse("unknown.key.404")
         );
     }
 
@@ -148,28 +122,6 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     }
 
     // set..............................................................................................................
-
-    @Test
-    public void testSetNullPathFails() {
-        assertThrows(
-            NullPointerException.class,
-            () -> Properties.EMPTY.set(
-                null,
-                "*value*"
-            )
-        );
-    }
-
-    @Test
-    public void testSetNullValueFails() {
-        assertThrows(
-            NullPointerException.class,
-            () -> Properties.EMPTY.set(
-                PropertiesPath.parse("key.123"),
-                null
-            )
-        );
-    }
 
     @Test
     public void testSetSame() {
@@ -257,14 +209,6 @@ public final class PropertiesTest implements ClassTesting<Properties>,
     }
 
     // remove...........................................................................................................
-
-    @Test
-    public void testRemoveNullFails() {
-        assertThrows(
-            NullPointerException.class,
-            () -> Properties.EMPTY.remove(null)
-        );
-    }
 
     @Test
     public void testRemoveWhenEmpty() {
@@ -620,23 +564,6 @@ public final class PropertiesTest implements ClassTesting<Properties>,
         );
     }
 
-    private void keysAndCheck(final Properties properties,
-                              final PropertiesPath... expected) {
-        this.keysAndCheck(
-            properties,
-            Sets.of(expected)
-        );
-    }
-
-    private void keysAndCheck(final Properties properties,
-                              final Set<PropertiesPath> expected) {
-        this.checkEquals(
-            expected,
-            properties.keys(),
-            () -> properties.toString()
-        );
-    }
-
     @Test
     public void testKeysReadOnly() {
         assertThrows(
@@ -686,25 +613,6 @@ public final class PropertiesTest implements ClassTesting<Properties>,
             ),
             value1,
             value2
-        );
-    }
-
-    private void valuesAndCheck(final Properties properties,
-                                final String... expected) {
-        this.valuesAndCheck(
-            properties,
-            Sets.of(expected)
-        );
-    }
-
-    private void valuesAndCheck(final Properties properties,
-                                final Collection<String> expected) {
-        this.checkEquals(
-            new ArrayList<>(expected),
-            new ArrayList<>(
-                properties.values()
-            ),
-            () -> properties.toString()
         );
     }
 
@@ -759,15 +667,6 @@ public final class PropertiesTest implements ClassTesting<Properties>,
                 "*value11*"
             ),
             1
-        );
-    }
-
-    private void sizeAndCheck(final Properties properties,
-                              final int expected) {
-        this.checkEquals(
-            expected,
-            properties.size(),
-            () -> properties.toString()
         );
     }
 
@@ -1919,6 +1818,11 @@ public final class PropertiesTest implements ClassTesting<Properties>,
                 "\n" +
                 "hello=world\n"
         );
+    }
+
+    @Override
+    public Properties createPropertiesLike() {
+        return Properties.EMPTY;
     }
 
     // class............................................................................................................

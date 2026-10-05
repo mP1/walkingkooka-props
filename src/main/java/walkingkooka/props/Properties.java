@@ -17,14 +17,12 @@
 
 package walkingkooka.props;
 
-import walkingkooka.CanBeEmpty;
 import walkingkooka.InvalidCharacterException;
 import walkingkooka.collect.map.Maps;
 import walkingkooka.collect.set.Sets;
 import walkingkooka.text.CharSequences;
 import walkingkooka.text.CharacterConstant;
 import walkingkooka.text.HasMultiLineText;
-import walkingkooka.text.HasText;
 import walkingkooka.text.LineEnding;
 import walkingkooka.text.MultiLineText;
 import walkingkooka.text.TextContext;
@@ -46,9 +44,8 @@ import java.util.SortedMap;
 /**
  * An immutable key/value store of {@link String values} along with a optional comment.
  */
-public final class Properties implements CanBeEmpty,
+public final class Properties implements PropertiesLike<String>,
     HasMultiLineText,
-    HasText,
     HasProperties,
     TreePrintable {
 
