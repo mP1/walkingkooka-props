@@ -120,6 +120,68 @@ public final class PropertiesTest implements PropertiesLikeTesting2<Properties, 
         );
     }
 
+    // getOrTryAncestors................................................................................................
+
+    @Test
+    public void testGetOrTryAncestors() {
+        final PropertiesPath key111 = PropertiesPath.parse("parent.self");
+        final String value111 = "value111";
+
+        final PropertiesPath key222 = PropertiesPath.parse("parent");
+        final String value222 = "value111";
+
+        this.getOrTryAncestorsAndCheck(
+            new Properties(
+                COMMENT,
+                map(
+                    key111,
+                    value111,
+                    key222,
+                    value222
+                )
+            ),
+            key111,
+            value111
+        );
+    }
+
+    @Test
+    public void testGetOrTryAncestorsParent() {
+        final PropertiesPath key111 = PropertiesPath.parse("parent.self");
+        final String value111 = "value111";
+
+        final PropertiesPath key222 = PropertiesPath.parse("parent");
+        final String value222 = "value111";
+
+        this.getOrTryAncestorsAndCheck(
+            new Properties(
+                COMMENT,
+                map(
+                    key111,
+                    value111,
+                    key222,
+                    value222
+                )
+            ),
+            PropertiesPath.parse("parent.different"),
+            value222
+        );
+    }
+
+    @Test
+    public void testGettestGetOrTryAncestorsUnknown() {
+        this.getOrTryAncestorsAndCheck(
+            new Properties(
+                COMMENT,
+                map(
+                    PropertiesPath.parse("key.1"),
+                    "value1"
+                )
+            ),
+            PropertiesPath.parse("unknown.key.404")
+        );
+    }
+
     // set..............................................................................................................
 
     @Test
