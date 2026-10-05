@@ -22,8 +22,7 @@ import walkingkooka.HashCodeEqualsDefinedTesting2;
 import walkingkooka.ToStringTesting;
 import walkingkooka.collect.map.Maps;
 import walkingkooka.collect.set.Sets;
-import walkingkooka.reflect.ClassTesting;
-import walkingkooka.reflect.JavaVisibility;
+import walkingkooka.reflect.PublicClassTesting;
 import walkingkooka.test.ParseStringTesting;
 import walkingkooka.text.CharSequences;
 import walkingkooka.text.HasMultiLineTextTesting;
@@ -46,7 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class PropertiesTest implements PropertiesLikeTesting2<Properties, String>,
-    ClassTesting<Properties>,
+    PublicClassTesting<Properties>,
     HashCodeEqualsDefinedTesting2<Properties>,
     HasMultiLineTextTesting,
     HasPropertiesTesting,
@@ -1830,11 +1829,6 @@ public final class PropertiesTest implements PropertiesLikeTesting2<Properties, 
     @Override
     public Class<Properties> type() {
         return Properties.class;
-    }
-
-    @Override
-    public JavaVisibility typeVisibility() {
-        return JavaVisibility.PUBLIC;
     }
 
     // helpers...................... ...................................................................................
