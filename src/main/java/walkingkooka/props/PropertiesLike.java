@@ -18,6 +18,7 @@
 package walkingkooka.props;
 
 import walkingkooka.CanBeEmpty;
+import walkingkooka.text.HasMultiLineText;
 import walkingkooka.text.HasText;
 
 import java.util.Collection;
@@ -29,7 +30,9 @@ import java.util.Set;
  * A typed {@link Properties} holding values for a given {@link PropertiesPath}.
  */
 public interface PropertiesLike<T> extends CanBeEmpty,
-    HasText {
+    HasMultiLineText,
+    HasText,
+    HasProperties{
 
     /**
      * Getter that returns the value for the given {@link PropertiesPath}.
