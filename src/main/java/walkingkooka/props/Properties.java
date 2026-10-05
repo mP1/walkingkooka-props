@@ -78,6 +78,7 @@ public final class Properties implements PropertiesLike<String>,
     /**
      * Fetches the string value for the given {@link PropertiesPath}.
      */
+    @Override
     public Optional<String> get(final PropertiesPath path) {
         return Optional.ofNullable(
             this.pathToValue.get(
@@ -86,15 +87,11 @@ public final class Properties implements PropertiesLike<String>,
         );
     }
 
-    public String getOrFail(final PropertiesPath path) {
-        return this.get(path)
-            .orElseThrow(() -> new MissingPropertyException(path));
-    }
-
     /**
      * Sets or replaces the string value for the given {@link PropertiesPath}, returning a {@link Properties} with the
      * change leaving the original unchanged
      */
+    @Override
     public Properties set(final PropertiesPath path,
                           final String value) {
         Objects.requireNonNull(path, "path");
@@ -127,6 +124,7 @@ public final class Properties implements PropertiesLike<String>,
      * Removes the string value if one exists, for the given {@link PropertiesPath}, returning a {@link Properties} with the
      * change leaving the original unchanged
      */
+    @Override
     public Properties remove(final PropertiesPath path) {
         Objects.requireNonNull(path, "path");
 
@@ -156,6 +154,7 @@ public final class Properties implements PropertiesLike<String>,
     /**
      * Read-only view of the entries in this properties object.
      */
+    @Override
     public Set<Entry<PropertiesPath, String>> entries() {
         return Sets.readOnly(
             this.pathToValue.entrySet()
@@ -165,6 +164,7 @@ public final class Properties implements PropertiesLike<String>,
     /**
      * Read-only view of the keys in this properties object.
      */
+    @Override
     public Set<PropertiesPath> keys() {
         return Sets.readOnly(this.pathToValue.keySet());
     }
@@ -172,6 +172,7 @@ public final class Properties implements PropertiesLike<String>,
     /**
      * Read-only view of the values in this properties object.
      */
+    @Override
     public Collection<String> values() {
         return Collections.unmodifiableCollection(
             this.pathToValue.values()
@@ -181,6 +182,7 @@ public final class Properties implements PropertiesLike<String>,
     /**
      * Returns the number of entries.
      */
+    @Override
     public int size() {
         return this.pathToValue.size();
     }
