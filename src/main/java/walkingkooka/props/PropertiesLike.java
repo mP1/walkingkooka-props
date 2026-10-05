@@ -26,7 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * A typed {@link Properties} like object.
+ * A typed {@link Properties} holding values for a given {@link PropertiesPath}.
  */
 public interface PropertiesLike<T> extends CanBeEmpty,
     HasText {
