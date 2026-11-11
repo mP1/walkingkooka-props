@@ -19,14 +19,11 @@ package walkingkooka.props;
 
 import org.junit.jupiter.api.Test;
 import walkingkooka.naming.PathNameTesting;
-import walkingkooka.reflect.ClassTesting2;
-import walkingkooka.reflect.JavaVisibility;
 import walkingkooka.text.CaseSensitivity;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-final public class PropertiesNameTest implements ClassTesting2<PropertiesName>,
-    PathNameTesting<PropertiesName, PropertiesName> {
+final public class PropertiesNameTest implements PathNameTesting<PropertiesName, PropertiesName> {
 
     @Test
     public void testCreateContainsSeparatorFails() {
@@ -75,10 +72,5 @@ final public class PropertiesNameTest implements ClassTesting2<PropertiesName>,
     @Override
     public String nameTextLess() {
         return "a";
-    }
-
-    @Override
-    public JavaVisibility typeVisibility() {
-        return JavaVisibility.PUBLIC;
     }
 }
