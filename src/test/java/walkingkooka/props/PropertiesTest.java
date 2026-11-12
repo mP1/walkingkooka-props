@@ -50,7 +50,7 @@ public final class PropertiesTest implements PropertiesLikeTesting2<Properties, 
     HasMultiLineTextTesting,
     HasPropertiesTesting,
     PropertiesLikeTesting,
-    ToStringTesting<Properties>,
+    ToStringTesting,
     ParseStringTesting<Properties> {
 
     private final String COMMENT = "Comment 123";
