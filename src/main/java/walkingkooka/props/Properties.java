@@ -873,7 +873,7 @@ public final class Properties implements PropertiesLike<String>,
     public MultiLineText multiLineText(final TextContext context) {
         Objects.requireNonNull(context, "textContext");
 
-        return MultiLineText.with(
+        return MultiLineText.EMPTY.setText(
             this.textWithLineBreaks(
                 context.lineEnding()
             )
