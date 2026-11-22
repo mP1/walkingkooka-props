@@ -21,8 +21,7 @@ import org.junit.jupiter.api.Test;
 import walkingkooka.collect.set.Sets;
 import walkingkooka.naming.PathSeparator;
 import walkingkooka.naming.PathTesting;
-import walkingkooka.reflect.ClassTesting2;
-import walkingkooka.reflect.JavaVisibility;
+import walkingkooka.reflect.PublicClassTesting;
 import walkingkooka.test.ParseStringTesting;
 
 import java.util.Set;
@@ -32,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 final public class PropertiesPathTest implements PathTesting<PropertiesPath, PropertiesName>,
-    ClassTesting2<PropertiesPath>,
+    PublicClassTesting<PropertiesPath>,
     ParseStringTesting<PropertiesPath> {
 
     @Override
@@ -151,11 +150,6 @@ final public class PropertiesPathTest implements PathTesting<PropertiesPath, Pro
     @Override
     public Class<PropertiesPath> type() {
         return PropertiesPath.class;
-    }
-
-    @Override
-    public final JavaVisibility typeVisibility() {
-        return JavaVisibility.PUBLIC;
     }
 
     // ConstantTesting .................................................................................................
