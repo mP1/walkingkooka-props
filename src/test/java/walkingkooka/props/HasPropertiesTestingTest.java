@@ -18,8 +18,10 @@
 package walkingkooka.props;
 
 import org.junit.jupiter.api.Test;
+import walkingkooka.reflect.PublicClassTesting;
 
-public final class HasPropertiesTestingTest implements HasPropertiesTesting {
+public final class HasPropertiesTestingTest implements HasPropertiesTesting,
+    PublicClassTesting<HasPropertiesTesting> {
 
     @Test
     public void testPropertiesAndCheckWithPropertiesEmpty() {
@@ -40,5 +42,12 @@ public final class HasPropertiesTestingTest implements HasPropertiesTesting {
             ),
             "hello=World\r\n"
         );
+    }
+
+    // class............................................................................................................
+
+    @Override
+    public Class<HasPropertiesTesting> type() {
+        return HasPropertiesTesting.class;
     }
 }
