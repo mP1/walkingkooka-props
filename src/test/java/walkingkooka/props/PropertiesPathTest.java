@@ -189,14 +189,4 @@ final public class PropertiesPathTest implements PathTesting<PropertiesPath, Pro
     public PropertiesPath parseString(final String text) {
         return PropertiesPath.parse(text);
     }
-
-    @Override
-    public RuntimeException parseStringFailedExpected(final RuntimeException expected) {
-        return expected;
-    }
-
-    @Override
-    public Class<? extends RuntimeException> parseStringFailedExpected(final Class<? extends RuntimeException> expected) {
-        return expected;
-    }
 }
